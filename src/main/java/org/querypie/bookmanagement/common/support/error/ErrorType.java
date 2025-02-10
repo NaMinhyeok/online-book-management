@@ -13,6 +13,8 @@ public enum ErrorType {
     BINDING_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E400, "입력 형식이 올바르지 않습니다.", LogLevel.WARN),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "요청하신 리소스를 찾을 수 없습니다.", LogLevel.WARN),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.E405, "지원하지 않는 메소드입니다.", LogLevel.WARN),
+
+    DATE_PARSE_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E400, "날짜 형식이 올바르지 않습니다.", LogLevel.WARN),
     ;
 
     private final HttpStatus status;

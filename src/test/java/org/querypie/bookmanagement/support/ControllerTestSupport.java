@@ -1,6 +1,7 @@
 package org.querypie.bookmanagement.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.querypie.bookmanagement.book.service.BookService;
 import org.querypie.bookmanagement.example.service.ExampleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -21,4 +22,6 @@ public abstract class ControllerTestSupport {
     @MockitoBean
     protected ExampleService exampleService;
 
+    @MockitoBean
+    protected BookService bookService;
 }
