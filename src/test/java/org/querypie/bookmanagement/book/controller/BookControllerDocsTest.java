@@ -5,8 +5,6 @@ import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.controller.request.BookCreateRequestDto;
-import org.querypie.bookmanagement.book.controller.response.AllBooksResponseDto;
-import org.querypie.bookmanagement.book.controller.response.BookResponseDto;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookCreateCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
@@ -64,7 +62,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
         Book book2 = createBook(2L, "프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", "2018-11-30");
 
         given(bookService.getBooks()).willReturn(List.of(
-            book1,book2
+            book1, book2
         ));
 
         mockMvc.perform(get("/api/v1/books"))
@@ -88,6 +86,36 @@ class BookControllerDocsTest extends ControllerTestSupport {
                         .responseSchema(Schema.schema("bookGetResponse"))
                         .build()
                 )));
+    }
+
+    @Test
+    void 책을_단권_조회한다() throws Exception {
+        Book book = createBook(1L, "함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
+
+        given(bookService.getBook(anyLong())).willReturn(book);
+
+        mockMvc.perform(get("/api/v1/books/{bookId}", 1L))
+            .andExpect(status().isOk())
+            .andDo(document("book-get-one",
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("책 단권 조회")
+                        .tags("Book")
+                        .responseFields(
+                            fieldWithPath("result").type(SimpleType.STRING).description("결과"),
+                            fieldWithPath("data.id").type(SimpleType.NUMBER).description("책 ID"),
+                            fieldWithPath("data.title").type(SimpleType.STRING).description("책 제목"),
+                            fieldWithPath("data.author").type(SimpleType.STRING).description("저자"),
+                            fieldWithPath("data.publisher").type(SimpleType.STRING).description("출판사"),
+                            fieldWithPath("data.isbn").type(SimpleType.STRING).description("ISBN"),
+                            fieldWithPath("data.description").type(SimpleType.STRING).description("설명").optional(),
+                            fieldWithPath("data.publishedAt").type(SimpleType.STRING).description("출판일"),
+                            fieldWithPath("error").ignored()
+                        )
+                        .responseSchema(Schema.schema("bookGetOneResponse"))
+                        .build()
+                )));
+
     }
 
     private Book createBook(Long id, String title, String author, String publisher, String isbn, String description, String publishedAt) {

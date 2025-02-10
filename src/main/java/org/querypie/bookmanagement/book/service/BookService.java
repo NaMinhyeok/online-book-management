@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookCreateCommand;
 import org.querypie.bookmanagement.book.repository.BookRepository;
+import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,5 +23,11 @@ public class BookService {
     @Transactional(readOnly = true)
     public List<Book> getBooks() {
         return bookRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Book getBook(Long bookId) {
+        return bookRepository.findById(bookId)
+            .orElseThrow(() -> CustomException.BOOK_NOT_FOUND);
     }
 }
