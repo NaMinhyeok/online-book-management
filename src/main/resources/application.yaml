@@ -18,10 +18,26 @@ spring:
   profiles:
     active: local
 
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
 ---
 spring:
   profiles:
     active: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
 
 ---
 spring:
@@ -32,7 +48,3 @@ spring:
 spring:
   profiles:
     active: prod
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
