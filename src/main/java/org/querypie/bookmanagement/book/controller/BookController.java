@@ -54,4 +54,13 @@ public class BookController {
         return ApiResponse.success();
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{bookId}")
+    public ApiResponse<?> deleteBook(
+        @PathVariable Long bookId
+    ) {
+        bookService.deleteBook(bookId);
+        return ApiResponse.success();
+    }
+
 }
