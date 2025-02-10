@@ -35,4 +35,12 @@ public class BookController {
         return ApiResponse.success(new AllBooksResponseDto(books.stream().map(BookResponseDto::of).toList()));
     }
 
+    @GetMapping("/{bookId}")
+    public ApiResponse<BookResponseDto> getBook(
+        @PathVariable Long bookId
+    ) {
+        Book book = bookService.getBook(bookId);
+        return ApiResponse.success(BookResponseDto.of(book));
+    }
+
 }
