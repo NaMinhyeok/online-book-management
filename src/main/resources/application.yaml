@@ -12,3 +12,27 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: none
+
+---
+spring:
+  profiles:
+    active: local
+
+---
+spring:
+  profiles:
+    active: test
+
+---
+spring:
+  profiles:
+    active: dev
+
+---
+spring:
+  profiles:
+    active: prod
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
