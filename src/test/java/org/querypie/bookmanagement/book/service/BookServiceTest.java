@@ -185,4 +185,53 @@ class BookServiceTest extends IntegrationTestSupport {
         ).isEqualTo(CustomException.BOOK_NOT_FOUND);
     }
 
+    @DisplayName("도서를 삭제한다")
+    @Test
+    void deleteBook() {
+        //given
+        Book book = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+        bookRepository.save(book);
+        //when
+        bookService.deleteBook(book.getId());
+        //then
+        List<Book> books = bookRepository.findAll();
+        then(books).isEmpty();
+    }
+
+    @DisplayName("도서를 삭제할 때 존재하지 않는 도서를 삭제하면 예외가 발생한다")
+    @Test
+    void deleteBook_NotFound() {
+        // given
+        Book book1 = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+
+        Book book2 = Book.builder()
+            .title("프로그래머의 길")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2017-12-11")
+            .build();
+
+        bookRepository.saveAll(List.of(book1, book2));
+        // when
+        // then
+        thenThrownBy(() -> bookService.deleteBook(0L))
+            .isEqualTo(CustomException.BOOK_NOT_FOUND);
+    }
+
 }

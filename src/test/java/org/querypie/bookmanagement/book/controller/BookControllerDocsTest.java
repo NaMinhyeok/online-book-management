@@ -152,6 +152,27 @@ class BookControllerDocsTest extends ControllerTestSupport {
                 )));
     }
 
+    @Test
+    void 책을_삭제한다() throws Exception {
+        willDoNothing().given(bookService).deleteBook(anyLong());
+
+        mockMvc.perform(delete("/api/v1/books/{bookId}", 1L))
+            .andExpect(status().isNoContent())
+            .andDo(document("book-delete",
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("책 삭제")
+                        .tags("Book")
+                        .responseFields(
+                            fieldWithPath("result").type(SimpleType.STRING).description("결과"),
+                            fieldWithPath("data").ignored(),
+                            fieldWithPath("error").ignored()
+                        )
+                        .responseSchema(Schema.schema("bookDeleteResponse"))
+                        .build()
+                )));
+    }
+
     private Book createBook(Long id, String title, String author, String publisher, String isbn, String description, String publishedAt) {
         Book book = Book.builder()
             .title(title)

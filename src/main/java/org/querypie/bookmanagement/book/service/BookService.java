@@ -42,4 +42,14 @@ public class BookService {
                 }
             );
     }
+
+    public void deleteBook(Long bookId) {
+        bookRepository.findById(bookId)
+            .ifPresentOrElse(
+                bookRepository::delete,
+                () -> {
+                    throw CustomException.BOOK_NOT_FOUND;
+                }
+            );
+    }
 }
