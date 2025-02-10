@@ -5,6 +5,9 @@ import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookCreateCommand;
 import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -14,5 +17,10 @@ public class BookService {
 
     public void registerBook(BookCreateCommand command) {
         bookRepository.save(Book.create(command));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Book> getBooks() {
+        return bookRepository.findAll();
     }
 }

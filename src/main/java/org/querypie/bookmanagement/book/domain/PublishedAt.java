@@ -31,4 +31,8 @@ public class PublishedAt {
             throw CustomException.DATE_PARSE_ERROR;
         }
     }
+
+    String getFormattedValue() {
+        return value.format(FORMATTER);
+    }
 }

@@ -57,4 +57,8 @@ public class Book extends BaseEntity {
     public LocalDate getPublishedAt() {
         return publishedAt.getValue();
     }
+
+    public String getFormattedPublishedAt() {
+        return publishedAt.getFormattedValue();
+    }
 }

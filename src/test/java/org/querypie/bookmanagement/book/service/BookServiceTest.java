@@ -39,4 +39,37 @@ class BookServiceTest extends IntegrationTestSupport {
             .containsExactly(tuple("함께 자라기", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30)));
     }
 
+    @DisplayName("책을 모두 조회한다")
+    @Test
+    void getBooks() {
+        //given
+        Book book1 = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+
+        Book book2 = Book.builder()
+            .title("프로그래머의 길")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2017-12-11")
+            .build();
+
+        bookRepository.saveAll(List.of(book1,book2));
+        //when
+        List<Book> books = bookService.getBooks();
+        //then
+        then(books).hasSize(2)
+            .extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
+            .containsExactly(
+                tuple("함께 자라기", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30)),
+                tuple("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", LocalDate.of(2017, 12, 11))
+            );
+    }
 }
