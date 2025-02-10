@@ -21,4 +21,41 @@ class BookTest {
             .containsExactly("함께 자라기", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30));
     }
 
+    @DisplayName("도서의 정보를 수정한다")
+    @Test
+    void updateBook() {
+        //given
+        Book book = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+        //when
+        book.update(new BookUpdateCommand("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262334", "description", "2018-11-30"));
+        //then
+        then(book).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
+            .containsExactly("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262334", "description", LocalDate.of(2018, 11, 30));
+    }
+
+    @DisplayName("도서의 정보를 수정 할 때 값이 없으면 수정하지 않는다")
+    @Test
+    void updateBookWhen() {
+        //given
+        Book book = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+        //when
+        book.update(new BookUpdateCommand("프로그래머의 길", null, null, null, null, null));
+        //then
+        then(book).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
+            .containsExactly("프로그래머의 길", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30));
+    }
 }

@@ -5,8 +5,10 @@ import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.controller.request.BookCreateRequestDto;
+import org.querypie.bookmanagement.book.controller.request.BookUpdateRequestDto;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookCreateCommand;
+import org.querypie.bookmanagement.book.domain.BookUpdateCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -16,8 +18,7 @@ import java.util.List;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -116,6 +117,39 @@ class BookControllerDocsTest extends ControllerTestSupport {
                         .build()
                 )));
 
+    }
+
+    @Test
+    void 책의_정보를_수정한다() throws Exception {
+        BookUpdateRequestDto request = new BookUpdateRequestDto("함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
+
+        willDoNothing().given(bookService).updateBook(anyLong(), any(BookUpdateCommand.class));
+
+        mockMvc.perform(put("/api/v1/books/{bookId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isNoContent())
+            .andDo(document("book-update",
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("책 수정")
+                        .tags("Book")
+                        .requestFields(
+                            fieldWithPath("title").description("책 제목"),
+                            fieldWithPath("author").description("저자"),
+                            fieldWithPath("publisher").description("출판사"),
+                            fieldWithPath("isbn").description("ISBN"),
+                            fieldWithPath("description").description("설명"),
+                            fieldWithPath("publishedAt").description("출판일")
+                        )
+                        .responseFields(
+                            fieldWithPath("result").type(SimpleType.STRING).description("결과"),
+                            fieldWithPath("data").ignored(),
+                            fieldWithPath("error").ignored()
+                        )
+                        .responseSchema(Schema.schema("bookUpdateResponse"))
+                        .build()
+                )));
     }
 
     private Book createBook(Long id, String title, String author, String publisher, String isbn, String description, String publishedAt) {

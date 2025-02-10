@@ -3,6 +3,7 @@ package org.querypie.bookmanagement.book.service;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookCreateCommand;
+import org.querypie.bookmanagement.book.domain.BookUpdateCommand;
 import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,16 @@ public class BookService {
     public Book getBook(Long bookId) {
         return bookRepository.findById(bookId)
             .orElseThrow(() -> CustomException.BOOK_NOT_FOUND);
+    }
+
+    @Transactional
+    public void updateBook(Long bookId, BookUpdateCommand command) {
+        bookRepository.findById(bookId)
+            .ifPresentOrElse(
+                book -> book.update(command),
+                () -> {
+                    throw CustomException.BOOK_NOT_FOUND;
+                }
+            );
     }
 }
