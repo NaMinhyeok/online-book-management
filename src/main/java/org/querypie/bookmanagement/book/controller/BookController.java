@@ -3,6 +3,7 @@ package org.querypie.bookmanagement.book.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.controller.request.BookCreateRequestDto;
+import org.querypie.bookmanagement.book.controller.request.BookUpdateRequestDto;
 import org.querypie.bookmanagement.book.controller.response.AllBooksResponseDto;
 import org.querypie.bookmanagement.book.controller.response.BookResponseDto;
 import org.querypie.bookmanagement.book.domain.Book;
@@ -41,6 +42,16 @@ public class BookController {
     ) {
         Book book = bookService.getBook(bookId);
         return ApiResponse.success(BookResponseDto.of(book));
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/{bookId}")
+    public ApiResponse<?> updateBook(
+        @PathVariable Long bookId,
+        @Valid @RequestBody BookUpdateRequestDto request
+    ) {
+        bookService.updateBook(bookId, request.toCommand());
+        return ApiResponse.success();
     }
 
 }

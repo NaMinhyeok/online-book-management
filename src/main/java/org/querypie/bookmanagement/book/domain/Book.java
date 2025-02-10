@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.querypie.bookmanagement.common.domain.BaseEntity;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -52,6 +53,15 @@ public class Book extends BaseEntity {
             .description(command.description())
             .publishedAt(command.publishedAt())
             .build();
+    }
+
+    public void update(BookUpdateCommand command) {
+        Optional.ofNullable(command.title()).ifPresent(value -> this.title = value);
+        Optional.ofNullable(command.author()).ifPresent(value -> this.author = value);
+        Optional.ofNullable(command.publisher()).ifPresent(value -> this.publisher = value);
+        Optional.ofNullable(command.isbn()).ifPresent(value -> this.isbn = value);
+        Optional.ofNullable(command.description()).ifPresent(value -> this.description = value);
+        Optional.ofNullable(command.publishedAt()).ifPresent(value -> this.publishedAt = new PublishedAt(value));
     }
 
     public LocalDate getPublishedAt() {
