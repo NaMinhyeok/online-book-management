@@ -15,7 +15,8 @@ public enum ErrorType {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, ErrorCode.E405, "지원하지 않는 메소드입니다.", LogLevel.WARN),
 
     DATE_PARSE_ERROR(HttpStatus.BAD_REQUEST, ErrorCode.E400, "날짜 형식이 올바르지 않습니다.", LogLevel.WARN),
-    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "해당 도서를 찾을 수 없습니다. ", LogLevel.WARN);
+    BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "해당 도서를 찾을 수 없습니다. ", LogLevel.WARN),
+    INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, ErrorCode.E400, "이메일 형식이 올바르지 않습니다.", LogLevel.WARN);
 
     private final HttpStatus status;
 
