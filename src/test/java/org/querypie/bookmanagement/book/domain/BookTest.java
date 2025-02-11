@@ -2,6 +2,8 @@ package org.querypie.bookmanagement.book.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
+import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 
 import java.time.LocalDate;
 
@@ -13,9 +15,8 @@ class BookTest {
     @Test
     void createBook() {
         //given
-        BookCreateCommand bookCreateCommand = new BookCreateCommand("함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
         //when
-        Book book = Book.create(bookCreateCommand);
+        Book book = Book.create("함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
         //then
         then(book).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
             .containsExactly("함께 자라기", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30));
@@ -34,7 +35,7 @@ class BookTest {
             .publishedAt("2018-11-30")
             .build();
         //when
-        book.update(new BookUpdateCommand("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262334", "description", "2018-11-30"));
+        book.update("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262334", "description", "2018-11-30");
         //then
         then(book).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
             .containsExactly("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262334", "description", LocalDate.of(2018, 11, 30));
@@ -53,7 +54,7 @@ class BookTest {
             .publishedAt("2018-11-30")
             .build();
         //when
-        book.update(new BookUpdateCommand("프로그래머의 길", null, null, null, null, null));
+        book.update("프로그래머의 길", null, null, null, null, null);
         //then
         then(book).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
             .containsExactly("프로그래머의 길", "김창준", "인사이트", "9788966262335", "description", LocalDate.of(2018, 11, 30));
