@@ -1,0 +1,26 @@
+services:
+  server:
+    image: "${DOCKER_USERNAME}/book-management:${BUILD_NUMBER}"
+    container_name: book-server
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      TZ: Asia/Seoul
+    volumes:
+      - /var/log/book:/var/log/book
+
+  api-docs:
+    image: swaggerapi/swagger-ui
+    container_name: api-docs
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs
+    environment:
+      URL: "/docs/openapi3.yaml"
+    restart: always
