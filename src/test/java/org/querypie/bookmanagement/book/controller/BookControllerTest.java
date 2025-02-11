@@ -3,8 +3,8 @@ package org.querypie.bookmanagement.book.controller;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.controller.request.BookCreateRequestDto;
 import org.querypie.bookmanagement.book.controller.request.BookUpdateRequestDto;
-import org.querypie.bookmanagement.book.domain.BookCreateCommand;
-import org.querypie.bookmanagement.book.domain.BookUpdateCommand;
+import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
+import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
 import org.springframework.http.MediaType;
 

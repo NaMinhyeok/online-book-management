@@ -2,7 +2,7 @@ package org.querypie.bookmanagement.book.controller.request;
 
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.ISBN;
-import org.querypie.bookmanagement.book.domain.BookUpdateCommand;
+import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 
 public record BookUpdateRequestDto(
     String title,

@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -44,24 +45,24 @@ public class Book extends BaseEntity {
         this.publishedAt = new PublishedAt(publishedAt);
     }
 
-    public static Book create(BookCreateCommand command) {
+    public static Book create(String title, String author, String publisher, String isbn, String description, String publishedAt) {
         return Book.builder()
-            .title(command.title())
-            .author(command.author())
-            .publisher(command.publisher())
-            .isbn(command.isbn())
-            .description(command.description())
-            .publishedAt(command.publishedAt())
+            .title(title)
+            .author(author)
+            .publisher(publisher)
+            .isbn(isbn)
+            .description(description)
+            .publishedAt(publishedAt)
             .build();
     }
 
-    public void update(BookUpdateCommand command) {
-        Optional.ofNullable(command.title()).ifPresent(value -> this.title = value);
-        Optional.ofNullable(command.author()).ifPresent(value -> this.author = value);
-        Optional.ofNullable(command.publisher()).ifPresent(value -> this.publisher = value);
-        Optional.ofNullable(command.isbn()).ifPresent(value -> this.isbn = value);
-        Optional.ofNullable(command.description()).ifPresent(value -> this.description = value);
-        Optional.ofNullable(command.publishedAt()).ifPresent(value -> this.publishedAt = new PublishedAt(value));
+    public void update(String title, String author, String publisher, String isbn, String description, String publishedAt) {
+        Optional.ofNullable(title).ifPresent(value -> this.title = value);
+        Optional.ofNullable(author).ifPresent(value -> this.author = value);
+        Optional.ofNullable(publisher).ifPresent(value -> this.publisher = value);
+        Optional.ofNullable(isbn).ifPresent(value -> this.isbn = value);
+        Optional.ofNullable(description).ifPresent(value -> this.description = value);
+        Optional.ofNullable(publishedAt).ifPresent(value -> this.publishedAt = new PublishedAt(value));
     }
 
     public LocalDate getPublishedAt() {

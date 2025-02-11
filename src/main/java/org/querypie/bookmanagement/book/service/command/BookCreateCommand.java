@@ -1,4 +1,4 @@
-package org.querypie.bookmanagement.book.domain;
+package org.querypie.bookmanagement.book.service.command;
 
 public record BookCreateCommand(
     String title,

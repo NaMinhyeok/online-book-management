@@ -3,7 +3,7 @@ package org.querypie.bookmanagement.book.controller.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.ISBN;
-import org.querypie.bookmanagement.book.domain.BookCreateCommand;
+import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 
 public record BookCreateRequestDto(
     @NotBlank
