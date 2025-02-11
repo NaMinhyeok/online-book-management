@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
 
 jobs:
@@ -44,6 +45,12 @@ jobs:
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha, mode=max
+          build-args: |
+            SPRING_PROFILES_ACTIVE=${{ env.ENVIROMENT }}
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+            DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_HOST=${{ secrets.DATABASE_HOST }}
 
   deploy:
     name: Deply to ECS
