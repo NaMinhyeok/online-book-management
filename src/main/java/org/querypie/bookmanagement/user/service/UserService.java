@@ -6,6 +6,8 @@ import org.querypie.bookmanagement.user.repository.UserRepository;
 import org.querypie.bookmanagement.user.service.command.UserRegisterCommand;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -14,5 +16,9 @@ public class UserService {
 
     public void register(UserRegisterCommand command) {
         userRepository.save(User.create(command.name(), command.email()));
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll();
     }
 }
