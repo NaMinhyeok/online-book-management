@@ -1,7 +1,9 @@
 package org.querypie.bookmanagement.user.service;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
@@ -11,8 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.assertj.core.api.BDDAssertions.tuple;
+import static org.assertj.core.api.BDDAssertions.*;
 
 @Transactional
 class UserServiceTest extends IntegrationTestSupport {
@@ -55,5 +56,42 @@ class UserServiceTest extends IntegrationTestSupport {
         then(users).hasSize(2)
             .extracting("name", "email")
             .containsExactly(tuple("나민혁", "nmh9097@gmail.com"), tuple("홍길동", "gildong@naver.com"));
+    }
+
+    @DisplayName("getUser 메서드는")
+    @Nested
+    class getUser {
+        @DisplayName("존재하는 사용자를 조회하면")
+        @Nested
+        class userExists {
+            @DisplayName("사용자를 반환한다")
+            @Test
+            void findUser() {
+                //given
+                User user = User.builder()
+                    .name("나민혁")
+                    .email("nmh9097@gmail.com")
+                    .build();
+                userRepository.save(user);
+                //when
+                User foundUser = userService.getUser(user.getId());
+                //then
+                then(foundUser).extracting("name", "email")
+                    .containsExactly("나민혁", "nmh9097@gmail.com");
+            }
+        }
+
+        @DisplayName("존재하지 않는 사용자를 조회하면")
+        @Nested
+        class userNotExists {
+            @DisplayName("사용자를 찾을 수 없다는 예외를 던진다")
+            @Test
+            void throwUserNotFoundException() {
+                //when
+                //then
+                thenThrownBy(() -> userService.getUser(0L))
+                    .isEqualTo(CustomException.USER_NOT_FOUND);
+            }
+        }
     }
 }

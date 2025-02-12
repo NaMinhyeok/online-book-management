@@ -34,4 +34,12 @@ public class UserController {
         List<User> users = userService.getUsers();
         return ApiResponse.success(new AllUserResponseDto(users.stream().map(UserResponseDto::of).toList()));
     }
+
+    @GetMapping("/{userId}")
+    public ApiResponse<UserResponseDto> getUser(
+        @PathVariable Long userId
+    ) {
+        User user = userService.getUser(userId);
+        return ApiResponse.success(UserResponseDto.of(user));
+    }
 }
