@@ -34,4 +34,26 @@ class UserServiceTest extends IntegrationTestSupport {
         then(users).extracting("name", "email")
             .containsExactly(tuple("나민혁", "nmh9097@gmail.com"));
     }
+
+    @DisplayName("사용자를 모두 조회한다")
+    @Test
+    void getUsers() {
+        //given
+        User user1 = User.builder()
+            .name("나민혁")
+            .email("nmh9097@gmail.com")
+            .build();
+        User user2 = User.builder()
+            .name("홍길동")
+            .email("gildong@naver.com")
+            .build();
+
+        userRepository.saveAll(List.of(user1, user2));
+        //when
+        List<User> users = userService.getUsers();
+        //then
+        then(users).hasSize(2)
+            .extracting("name", "email")
+            .containsExactly(tuple("나민혁", "nmh9097@gmail.com"), tuple("홍길동", "gildong@naver.com"));
+    }
 }
