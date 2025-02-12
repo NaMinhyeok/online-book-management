@@ -1,6 +1,7 @@
 package org.querypie.bookmanagement.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
 import org.querypie.bookmanagement.user.service.command.UserRegisterCommand;
@@ -20,5 +21,9 @@ public class UserService {
 
     public List<User> getUsers() {
         return userRepository.findAll();
+    }
+
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> CustomException.USER_NOT_FOUND);
     }
 }

@@ -13,6 +13,7 @@ public class CustomException extends RuntimeException {
         new CustomException(ErrorType.DATE_PARSE_ERROR);
     public static final CustomException BOOK_NOT_FOUND = new CustomException(ErrorType.BOOK_NOT_FOUND);
     public static final CustomException INVALID_EMAIL_FORMAT = new CustomException(ErrorType.INVALID_EMAIL_FORMAT);
+    public static final CustomException USER_NOT_FOUND = new CustomException(ErrorType.USER_NOT_FOUND);
 
     private final ErrorType errorType;
 
