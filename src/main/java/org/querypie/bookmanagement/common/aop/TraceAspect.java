@@ -27,7 +27,7 @@ public class TraceAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.getMethod().getName();
 
-        log.trace("[TRACE] 실행 메서드: {}, 실행시간 = {}ms", methodName, totalTimeMillis);
+        log.info("[TRACE] 실행 메서드: {}, 실행시간 = {}ms", methodName, totalTimeMillis);
 
         return result;
     }
