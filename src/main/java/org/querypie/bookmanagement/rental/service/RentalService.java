@@ -5,6 +5,7 @@ import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
+import org.querypie.bookmanagement.rental.domain.RentalBook;
 import org.querypie.bookmanagement.rental.repository.RentalRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
@@ -25,9 +26,11 @@ public class RentalService {
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final RentalBookRepository rentalBookRepository;
 
+    @Transactional
     public void rentalBooks(RentalBookCommand command, LocalDateTime rentalAt) {
-
+        verifyRentalAvailable(command.bookIds());
         List<Book> books = findBooksBy(command.bookIds());
         User user = userRepository.findById(command.userId())
             .orElseThrow(() -> CustomException.USER_NOT_FOUND);
@@ -35,8 +38,18 @@ public class RentalService {
         rentalRepository.save(rental);
     }
 
+    private void verifyRentalAvailable(List<Long> bookIds) {
+        List<RentalBook> rentalBooks = rentalBookRepository.findRentedBooksByBookIdsAndReturnedAtIsNull(bookIds);
+        if (!rentalBooks.isEmpty()) {
+            throw CustomException.RENTAL_BOOKS_ALREADY_RENTED;
+        }
+    }
+
     private List<Book> findBooksBy(List<Long> bookIds) {
         List<Book> books = bookRepository.findAllById(bookIds);
+        if(books.size() != bookIds.size()) {
+            throw CustomException.BOOK_NOT_FOUND;
+        }
         Map<Long, Book> bookMap = books.stream().collect(Collectors.toMap(Book::getId, book -> book));
 
         List<Book> duplicateBooks = bookIds.stream()

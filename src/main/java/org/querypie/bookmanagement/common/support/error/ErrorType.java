@@ -20,7 +20,8 @@ public enum ErrorType {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "해당 사용자를 찾을 수 없습니다.", LogLevel.WARN),
     RENTAL_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "대여 정보를 찾을 수 없습니다.", LogLevel.WARN),
     RENTAL_BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorCode.E404, "대여 내역에서 해당 도서를 찾을 수 없습니다.", LogLevel.WARN),
-    RENTAL_USER_NOT_MATCHED(HttpStatus.FORBIDDEN, ErrorCode.E403, "대여한 사용자만 반납 할 수 있습니다.", LogLevel.WARN);
+    RENTAL_USER_NOT_MATCHED(HttpStatus.FORBIDDEN, ErrorCode.E403, "대여한 사용자만 반납 할 수 있습니다.", LogLevel.WARN),
+    RENTAL_BOOKS_ALREADY_RENTED(HttpStatus.BAD_REQUEST, ErrorCode.E400,"이미 대여된 도서가 존재합니다." , LogLevel.WARN);
 
     private final HttpStatus status;
 
