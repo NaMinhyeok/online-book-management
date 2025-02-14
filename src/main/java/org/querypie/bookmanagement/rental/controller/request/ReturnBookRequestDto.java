@@ -1,4 +1,4 @@
-package org.querypie.bookmanagement.rental.controller;
+package org.querypie.bookmanagement.rental.controller.request;
 
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 
