@@ -2,10 +2,13 @@ package org.querypie.bookmanagement.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
+import org.querypie.bookmanagement.book.domain.BookSortField;
 import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.support.error.CustomException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +25,13 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public List<Book> getBooks() {
-        return bookRepository.findAll();
+    public Page<Book> getBooks(Pageable pageable) {
+        verifySortProperties(pageable);
+        return bookRepository.findAll(pageable);
+    }
+
+    private void verifySortProperties(Pageable pageable) {
+        pageable.getSort().forEach(order -> BookSortField.validateSortField(order.getProperty()));
     }
 
     @Transactional(readOnly = true)

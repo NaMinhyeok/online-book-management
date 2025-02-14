@@ -10,6 +10,7 @@ import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
+import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -63,26 +64,41 @@ class BookControllerDocsTest extends ControllerTestSupport {
         Book book1 = createBook(1L, "함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
         Book book2 = createBook(2L, "프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", "2018-11-30");
 
-        given(bookService.getBooks()).willReturn(List.of(
-            book1, book2
-        ));
+        Page<Book> booksPage = new PageImpl<>(List.of(book1, book2), PageRequest.of(0, 20, Sort.by("publishedAt").descending()), 2);
 
-        mockMvc.perform(get("/api/v1/books"))
+        given(bookService.getBooks(any(Pageable.class))).willReturn(booksPage);
+
+        mockMvc.perform(get("/api/v1/books")
+                .param("page", "1")
+                .param("size", "20")
+                .param("sort", "publishedAt,desc")
+                .contentType(MediaType.APPLICATION_JSON)
+            )
             .andExpect(status().isOk())
             .andDo(document("book-get",
                 resource(
                     ResourceSnippetParameters.builder()
                         .description("책 목록 조회")
                         .tags("Book")
+                        .queryParameters(
+                            parameterWithName("page").type(SimpleType.NUMBER).description("페이지 번호(default: 1)"),
+                            parameterWithName("size").type(SimpleType.NUMBER).description("페이지 크기(default: 20)"),
+                            parameterWithName("sort").type(SimpleType.STRING).description("정렬 기준(default: publishedAt,desc) 사용 가능 값: publishedAt, title")
+                        )
                         .responseFields(
                             fieldWithPath("result").type(SimpleType.STRING).description("결과"),
-                            fieldWithPath("data.books[].id").description("책 목록").type(SimpleType.NUMBER).description("책 ID"),
-                            fieldWithPath("data.books[].title").type(SimpleType.STRING).description("책 제목"),
-                            fieldWithPath("data.books[].author").type(SimpleType.STRING).description("저자"),
-                            fieldWithPath("data.books[].publisher").type(SimpleType.STRING).description("출판사"),
-                            fieldWithPath("data.books[].isbn").type(SimpleType.STRING).description("ISBN"),
-                            fieldWithPath("data.books[].description").type(SimpleType.STRING).description("설명").optional(),
-                            fieldWithPath("data.books[].publishedAt").type(SimpleType.STRING).description("출판일"),
+                            fieldWithPath("data.content[].id").description("책 목록").type(SimpleType.NUMBER).description("책 ID"),
+                            fieldWithPath("data.content[].title").type(SimpleType.STRING).description("책 제목"),
+                            fieldWithPath("data.content[].author").type(SimpleType.STRING).description("저자"),
+                            fieldWithPath("data.content[].publisher").type(SimpleType.STRING).description("출판사"),
+                            fieldWithPath("data.content[].isbn").type(SimpleType.STRING).description("ISBN"),
+                            fieldWithPath("data.content[].description").type(SimpleType.STRING).description("설명").optional(),
+                            fieldWithPath("data.content[].publishedAt").type(SimpleType.STRING).description("출판일"),
+                            fieldWithPath("data.pagination.currentPage").type(SimpleType.NUMBER).description("현재 페이지"),
+                            fieldWithPath("data.pagination.totalPages").type(SimpleType.NUMBER).description("전체 페이지 수"),
+                            fieldWithPath("data.pagination.pageSize").type(SimpleType.NUMBER).description("페이지 크기"),
+                            fieldWithPath("data.pagination.totalElements").type(SimpleType.NUMBER).description("전체 요소 수"),
+                            fieldWithPath("data.pagination.last").type(SimpleType.BOOLEAN).description("마지막 페이지 여부"),
                             fieldWithPath("error").ignored()
                         )
                         .responseSchema(Schema.schema("bookGetResponse"))

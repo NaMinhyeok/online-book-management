@@ -18,6 +18,7 @@ public class CustomException extends RuntimeException {
     public static final CustomException RENTAL_BOOK_NOT_FOUND = new CustomException(ErrorType.RENTAL_BOOK_NOT_FOUND);
     public static final CustomException RENTAL_USER_NOT_MATCHED = new CustomException(ErrorType.RENTAL_USER_NOT_MATCHED);
     public static final CustomException RENTAL_BOOKS_ALREADY_RENTED = new CustomException(ErrorType.RENTAL_BOOKS_ALREADY_RENTED);
+    public static final CustomException INVALID_SORT_FIELD = new CustomException(ErrorType.INVALID_SORT_FIELD);
 
     private final ErrorType errorType;
 
