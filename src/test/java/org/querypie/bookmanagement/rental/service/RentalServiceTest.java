@@ -148,6 +148,7 @@ class RentalServiceTest extends IntegrationTestSupport {
             @Test
             void rentalBookUserNotFound() {
                 //given
+                LocalDateTime now = LocalDateTime.now();
                 Book book1 = Book.builder()
                     .title("함께 자라기")
                     .author("김창준")
@@ -175,13 +176,94 @@ class RentalServiceTest extends IntegrationTestSupport {
 
                 userRepository.save(user);
                 //when
-                LocalDateTime now = LocalDateTime.now();
                 //then
                 thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), 0L), now))
                     .isEqualTo(CustomException.USER_NOT_FOUND);
             }
         }
 
-    }
+        @DisplayName("이미 대여한 책을 대여하려고 하면")
+        @Nested
+        class whenAlreadyRentedBooks {
+            @DisplayName("이미 대여한 책이 있다는 예외를 던진다")
+            @Test
+            void rentalBookAlreadyRentedBooks() {
+                //given
+                Book book1 = Book.builder()
+                    .title("함께 자라기")
+                    .author("김창준")
+                    .publisher("인사이트")
+                    .isbn("9788966262335")
+                    .description("description")
+                    .publishedAt("2018-11-30")
+                    .build();
 
+                Book book2 = Book.builder()
+                    .title("프로그래머의 길")
+                    .author("로버트 C. 마틴")
+                    .publisher("인사이트")
+                    .isbn("9788966262336")
+                    .description("description")
+                    .publishedAt("2017-12-11")
+                    .build();
+
+                bookRepository.saveAll(List.of(book1, book2));
+
+                User user = User.builder()
+                    .name("나민혁")
+                    .email("nmh9097@gmail.com")
+                    .build();
+
+                userRepository.save(user);
+
+                Rental rental = Rental.create(List.of(book1, book2), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
+                rentalRepository.save(rental);
+                //when
+                //then
+                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), LocalDateTime.now()))
+                    .isEqualTo(CustomException.RENTAL_BOOKS_ALREADY_RENTED);
+            }
+        }
+
+        @DisplayName("책이 존재하지 않으면")
+        @Nested
+        class whenBookNotFound {
+            @DisplayName("책을 찾을 수 없다는 예외를 던진다")
+            @Test
+            void rentalBookBookNotFound() {
+                //given
+                LocalDateTime now = LocalDateTime.now();
+                Book book1 = Book.builder()
+                    .title("함께 자라기")
+                    .author("김창준")
+                    .publisher("인사이트")
+                    .isbn("9788966262335")
+                    .description("description")
+                    .publishedAt("2018-11-30")
+                    .build();
+
+                Book book2 = Book.builder()
+                    .title("프로그래머의 길")
+                    .author("로버트 C. 마틴")
+                    .publisher("인사이트")
+                    .isbn("9788966262336")
+                    .description("description")
+                    .publishedAt("2017-12-11")
+                    .build();
+
+                bookRepository.saveAll(List.of(book1, book2));
+
+                User user = User.builder()
+                    .name("나민혁")
+                    .email("nmh9097@gmail.com")
+                    .build();
+                userRepository.save(user);
+                //when
+                //then
+                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), 0L), user.getId()), now))
+                    .isEqualTo(CustomException.BOOK_NOT_FOUND);
+            }
+        }
+
+    }
 }
