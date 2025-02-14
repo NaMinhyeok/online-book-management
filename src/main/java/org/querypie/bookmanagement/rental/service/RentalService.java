@@ -47,7 +47,7 @@ public class RentalService {
 
     private List<Book> findBooksBy(List<Long> bookIds) {
         List<Book> books = bookRepository.findAllById(bookIds);
-        if(books.size() != bookIds.size()) {
+        if (books.size() != bookIds.size()) {
             throw CustomException.BOOK_NOT_FOUND;
         }
         Map<Long, Book> bookMap = books.stream().collect(Collectors.toMap(Book::getId, book -> book));
@@ -63,5 +63,10 @@ public class RentalService {
         Rental rental = rentalRepository.findWithBooksById(command.rentalId())
             .orElseThrow(() -> CustomException.RENTAL_NOT_FOUND);
         rental.returnBooks(command.userId(), command.bookIds(), returnAt);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isRentalAvailable(Long bookId) {
+        return rentalBookRepository.findRentedBookByBookIdAndReturnedAtIsNull(bookId).isEmpty();
     }
 }

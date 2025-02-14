@@ -36,4 +36,12 @@ public class RentalController {
         rentalService.returnBooks(request.toCommand(rentalId), returnAt);
         return ApiResponse.success();
     }
+
+    @GetMapping("/books/{bookId}/rental-available")
+    public ApiResponse<RentalAvailableResponse> getRentalAvailable(
+        @PathVariable Long bookId
+    ) {
+        boolean rentalAvailable = rentalService.isRentalAvailable(bookId);
+        return ApiResponse.success(new RentalAvailableResponse(rentalAvailable));
+    }
 }

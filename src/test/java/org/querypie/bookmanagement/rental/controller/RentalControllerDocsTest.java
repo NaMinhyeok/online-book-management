@@ -16,8 +16,10 @@ import java.util.List;
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +86,31 @@ class RentalControllerDocsTest extends ControllerTestSupport {
                             fieldWithPath("error").ignored()
                         )
                         .responseSchema(Schema.schema("returnBookResponse"))
+                        .build()
+                )));
+    }
+
+    @Test
+    void 도서를_대여할_수_있는_상태인지_확인한다() throws Exception {
+        long bookId = 1L;
+        given(rentalService.isRentalAvailable(bookId)).willReturn(true);
+
+        mockMvc.perform(get("/api/v1/rentals/books/{bookId}/rental-available", bookId))
+            .andExpect(status().isOk())
+            .andDo(document("is-rental-available",
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("도서 대여 가능 여부 확인")
+                        .tags("Rental")
+                        .pathParameters(
+                            parameterWithName("bookId").description("도서 ID")
+                        )
+                        .responseFields(
+                            fieldWithPath("result").type(SimpleType.STRING).description("결과"),
+                            fieldWithPath("data.available").type(SimpleType.BOOLEAN).description("대여 가능 여부(true: 가능, false: 불가능)"),
+                            fieldWithPath("error").ignored()
+                        )
+                        .responseSchema(Schema.schema("isRentalAvailableResponse"))
                         .build()
                 )));
     }
