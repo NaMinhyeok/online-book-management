@@ -9,6 +9,7 @@ import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.repository.RentalRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
+import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
@@ -67,18 +68,73 @@ class RentalServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         //when
         LocalDateTime now = LocalDateTime.now();
-        rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(),book2.getId()), user.getId()), now);
+        rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), now);
         //then
         List<Rental> rentals = rentalRepository.findAll();
 
         then(rentals).hasSize(1)
             .extracting("rentalAt", "deadlineAt")
             .containsExactly(tuple(now, now.plusDays(7)));
-        then(rentals.getFirst().getRentalBook())
+        then(rentals.getFirst().getRentalBooks())
             .extracting("book.title", "book.author", "book.publisher", "book.isbn")
             .containsExactly(
                 tuple("함께 자라기", "김창준", "인사이트", "9788966262335"),
                 tuple("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262336")
+            );
+    }
+
+    @DisplayName("도서들을 반납한다")
+    @Test
+    void returnBooks() {
+        //given
+        Book book1 = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+
+        Book book2 = Book.builder()
+            .title("프로그래머의 길")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966262336")
+            .description("description")
+            .publishedAt("2017-12-11")
+            .build();
+
+        Book book3 = Book.builder()
+            .title("실용주의 사고와 학습")
+            .author("앤디 헌트")
+            .isbn("9791158390150")
+            .publisher("인사이트")
+            .publishedAt("2015-10-29")
+            .build();
+
+        bookRepository.saveAll(List.of(book1, book2, book3));
+
+        User user = User.builder()
+            .name("나민혁")
+            .email("nmh9097@gmail.com")
+            .build();
+
+        userRepository.save(user);
+        Rental rental = Rental.create(List.of(book1, book2, book3), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
+        rentalRepository.save(rental);
+        //when
+        ReturnBookCommand command = new ReturnBookCommand(rental.getId(), List.of(book1.getId(), book2.getId()), user.getId());
+        rentalService.returnBooks(command, LocalDateTime.of(2025, 2, 14, 9, 0, 0));
+        //then
+        List<Rental> rentals = rentalRepository.findAll();
+        then(rentals).hasSize(1);
+        then(rentals.getFirst().getRentalBooks())
+            .extracting("book", "returnedAt")
+            .containsExactlyInAnyOrder(
+                tuple(book1, LocalDateTime.of(2025, 2, 14, 9, 0, 0)),
+                tuple(book2, LocalDateTime.of(2025, 2, 14, 9, 0, 0)),
+                tuple(book3, null)
             );
     }
 
@@ -121,7 +177,7 @@ class RentalServiceTest extends IntegrationTestSupport {
                 //when
                 LocalDateTime now = LocalDateTime.now();
                 //then
-                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(),book2.getId()), 0L), now))
+                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), 0L), now))
                     .isEqualTo(CustomException.USER_NOT_FOUND);
             }
         }

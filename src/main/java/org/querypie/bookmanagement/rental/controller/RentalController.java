@@ -25,4 +25,15 @@ public class RentalController {
         rentalService.rentalBooks(request.toCommand(), rentalAt);
         return ApiResponse.success();
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/{rentalId}/books/return")
+    public ApiResponse<?> returnBooks(
+        @PathVariable Long rentalId,
+        @RequestBody ReturnBookRequestDto request
+    ) {
+        LocalDateTime returnAt = LocalDateTime.now();
+        rentalService.returnBooks(request.toCommand(rentalId), returnAt);
+        return ApiResponse.success();
+    }
 }
