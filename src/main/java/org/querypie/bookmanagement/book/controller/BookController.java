@@ -1,6 +1,7 @@
 package org.querypie.bookmanagement.book.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.controller.request.BookCreateRequestDto;
 import org.querypie.bookmanagement.book.controller.request.BookUpdateRequestDto;
@@ -61,6 +62,14 @@ public class BookController {
     ) {
         bookService.deleteBook(bookId);
         return ApiResponse.success();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<AllBooksResponseDto> searchBooks(
+        @NotBlank @RequestParam String query
+    ) {
+        List<Book> books = bookService.searchBooks(query);
+        return ApiResponse.success(new AllBooksResponseDto(books.stream().map(BookResponseDto::of).toList()));
     }
 
 }
