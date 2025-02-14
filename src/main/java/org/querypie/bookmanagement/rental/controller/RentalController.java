@@ -2,6 +2,7 @@ package org.querypie.bookmanagement.rental.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.common.support.response.ApiResponse;
+import org.querypie.bookmanagement.rental.controller.request.RentalBookRequestDto;
 import org.querypie.bookmanagement.rental.service.RentalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/rental")
+@RequestMapping("/api/v1/rentals")
 @RestController
 public class RentalController {
 
@@ -17,11 +18,11 @@ public class RentalController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ApiResponse<?> rental(
+    public ApiResponse<?> rentalBooks(
         @RequestBody RentalBookRequestDto request
     ) {
         LocalDateTime rentalAt = LocalDateTime.now();
-        rentalService.rentalBook(request.toCommand(), rentalAt);
+        rentalService.rentalBooks(request.toCommand(), rentalAt);
         return ApiResponse.success();
     }
 }
