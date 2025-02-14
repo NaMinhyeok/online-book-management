@@ -9,6 +9,10 @@ import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -64,9 +68,20 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        Book book3 = Book.builder()
+            .title("클린 코드")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966261234")
+            .description("description")
+            .publishedAt("2010-01-01")
+            .build();
+
+        bookRepository.saveAll(List.of(book1, book2, book3));
+
+        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "publishedAt"));
         //when
-        List<Book> books = bookService.getBooks();
+        Page<Book> books = bookService.getBooks(pageable);
         //then
         then(books).hasSize(2)
             .extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
@@ -75,6 +90,47 @@ class BookServiceTest extends IntegrationTestSupport {
                 tuple("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", LocalDate.of(2017, 12, 11))
             );
     }
+
+    @DisplayName("책을 모두 조회할 때 정렬 필드값이 잘못된 경우 예외가 발생한다")
+    @Test
+    void getBooksWithInvalidSortField() {
+        //given
+        Book book1 = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+
+        Book book2 = Book.builder()
+            .title("프로그래머의 길")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2017-12-11")
+            .build();
+
+        Book book3 = Book.builder()
+            .title("클린 코드")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966261234")
+            .description("description")
+            .publishedAt("2010-01-01")
+            .build();
+
+        bookRepository.saveAll(List.of(book1, book2, book3));
+
+        Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "author"));
+        //when
+        //then
+        thenThrownBy(() -> bookService.getBooks(pageable))
+            .isEqualTo(CustomException.INVALID_SORT_FIELD);
+    }
+
 
     @DisplayName("책을 조회한다")
     @Test

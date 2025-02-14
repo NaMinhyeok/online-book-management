@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.domain.BaseEntity;
 
 import java.time.LocalDate;

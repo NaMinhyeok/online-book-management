@@ -10,6 +10,11 @@ import org.querypie.bookmanagement.book.controller.response.BookResponseDto;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.service.BookService;
 import org.querypie.bookmanagement.common.support.response.ApiResponse;
+import org.querypie.bookmanagement.common.support.response.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +37,11 @@ public class BookController {
     }
 
     @GetMapping
-    public ApiResponse<AllBooksResponseDto> getBooks() {
-        List<Book> books = bookService.getBooks();
-        return ApiResponse.success(new AllBooksResponseDto(books.stream().map(BookResponseDto::of).toList()));
+    public ApiResponse<PageResponse<BookResponseDto>> getBooks(
+        @PageableDefault(size = 20, sort = "publishedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<Book> books = bookService.getBooks(pageable);
+        return ApiResponse.success(PageResponse.of(books.map(BookResponseDto::of)));
     }
 
     @GetMapping("/{bookId}")
