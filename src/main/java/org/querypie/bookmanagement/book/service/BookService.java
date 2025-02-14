@@ -6,7 +6,9 @@ import org.querypie.bookmanagement.book.domain.BookSortField;
 import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
+import org.querypie.bookmanagement.common.aop.Trace;
 import org.querypie.bookmanagement.common.support.error.CustomException;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class BookService {
         bookRepository.save(Book.create(command.title(), command.author(), command.publisher(), command.isbn(), command.description(), command.publishedAt()));
     }
 
+    @Trace
     @Transactional(readOnly = true)
     public Page<Book> getBooks(Pageable pageable) {
         verifySortProperties(pageable);

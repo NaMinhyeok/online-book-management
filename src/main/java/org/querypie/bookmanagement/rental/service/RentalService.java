@@ -3,6 +3,7 @@ package org.querypie.bookmanagement.rental.service;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.repository.BookRepository;
+import org.querypie.bookmanagement.common.aop.Trace;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.domain.RentalBook;
@@ -65,6 +66,7 @@ public class RentalService {
         rental.returnBooks(command.userId(), command.bookIds(), returnAt);
     }
 
+    @Trace
     @Transactional(readOnly = true)
     public boolean isRentalAvailable(Long bookId) {
         return rentalBookRepository.findRentedBookByBookIdAndReturnedAtIsNull(bookId).isEmpty();
