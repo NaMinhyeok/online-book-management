@@ -1,8 +1,6 @@
 package org.querypie.bookmanagement.rental.domain;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +18,12 @@ import java.util.List;
 @Entity
 public class Rental extends BaseEntity {
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private LocalDateTime rentalAt;
-    private LocalDateTime returnAt;
+    private LocalDateTime deadlineAt;
 
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RentalBook> rentalBook = new ArrayList<>();
@@ -29,9 +31,10 @@ public class Rental extends BaseEntity {
     @Builder
     private Rental(List<Book> books, User user, LocalDateTime rentalAt) {
         this.rentalAt = rentalAt;
-        this.returnAt = rentalAt.plusDays(7);
+        this.deadlineAt = rentalAt.plusDays(7);
+        this.user = user;
         this.rentalBook = books.stream()
-            .map(book -> new RentalBook(book, this, user))
+            .map(book -> new RentalBook(book, this))
             .toList();
     }
 
@@ -42,4 +45,5 @@ public class Rental extends BaseEntity {
             .rentalAt(rentalAt)
             .build();
     }
+
 }
