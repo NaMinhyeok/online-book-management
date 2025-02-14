@@ -4,7 +4,8 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
 import org.junit.jupiter.api.Test;
-import org.querypie.bookmanagement.rental.service.RentalBookCommand;
+import org.querypie.bookmanagement.rental.controller.request.RentalBookRequestDto;
+import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
 import org.springframework.http.MediaType;
 
@@ -23,11 +24,11 @@ class RentalControllerDocsTest extends ControllerTestSupport {
 
     @Test
     void 책을_대여한다() throws Exception {
-        RentalBookRequestDto request = new RentalBookRequestDto(List.of("9788966262335", "9788966262336"), 1L);
+        RentalBookRequestDto request = new RentalBookRequestDto(List.of(1L, 2L), 1L);
 
-        willDoNothing().given(rentalService).rentalBook(any(RentalBookCommand.class), any(LocalDateTime.class));
+        willDoNothing().given(rentalService).rentalBooks(any(RentalBookCommand.class), any(LocalDateTime.class));
         mockMvc.perform(
-                post("/api/v1/rental")
+                post("/api/v1/rentals")
                     .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)
             )
@@ -39,7 +40,7 @@ class RentalControllerDocsTest extends ControllerTestSupport {
                             .description("책 대여")
                             .tags("Rental")
                             .requestFields(
-                                fieldWithPath("booksIsbn").description("대여할 책 ISBN 리스트"),
+                                fieldWithPath("bookIds").description("대여할 책 ID 목록"),
                                 fieldWithPath("userId").description("대여자 ID")
                             )
                             .responseFields(

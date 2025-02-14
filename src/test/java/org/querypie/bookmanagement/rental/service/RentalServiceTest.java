@@ -8,6 +8,7 @@ import org.querypie.bookmanagement.book.repository.BookRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.repository.RentalRepository;
+import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
@@ -36,7 +37,7 @@ class RentalServiceTest extends IntegrationTestSupport {
 
     @DisplayName("책을 대여한다")
     @Test
-    void rentalBookBook() {
+    void rentalBookBooks() {
         //given
         Book book1 = Book.builder()
             .title("함께 자라기")
@@ -66,7 +67,7 @@ class RentalServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         //when
         LocalDateTime now = LocalDateTime.now();
-        rentalService.rentalBook(new RentalBookCommand(List.of("9788966262335", "9788966262336"), user.getId()), now);
+        rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(),book2.getId()), user.getId()), now);
         //then
         List<Rental> rentals = rentalRepository.findAll();
 
@@ -120,7 +121,7 @@ class RentalServiceTest extends IntegrationTestSupport {
                 //when
                 LocalDateTime now = LocalDateTime.now();
                 //then
-                thenThrownBy(() -> rentalService.rentalBook(new RentalBookCommand(List.of("9788966262335", "9788966262336"), 100L), now))
+                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(),book2.getId()), 0L), now))
                     .isEqualTo(CustomException.USER_NOT_FOUND);
             }
         }

@@ -29,4 +29,8 @@ public class RentalBook extends BaseEntity {
         this.book = book;
         this.rental = rental;
     }
+
+    public void returnBook(LocalDateTime returnAt) {
+        this.returnAt = returnAt;
+    }
 }
