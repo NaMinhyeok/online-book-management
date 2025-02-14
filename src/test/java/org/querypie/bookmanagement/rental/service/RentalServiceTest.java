@@ -138,6 +138,45 @@ class RentalServiceTest extends IntegrationTestSupport {
             );
     }
 
+    @DisplayName("도서를 대여 할 수 있는지 확인한다")
+    @Test
+    void isRentalAvailable() {
+        //given
+        Book book1 = Book.builder()
+            .title("함께 자라기")
+            .author("김창준")
+            .publisher("인사이트")
+            .isbn("9788966262335")
+            .description("description")
+            .publishedAt("2018-11-30")
+            .build();
+
+        Book book2 = Book.builder()
+            .title("프로그래머의 길")
+            .author("로버트 C. 마틴")
+            .publisher("인사이트")
+            .isbn("9788966262336")
+            .description("description")
+            .publishedAt("2017-12-11")
+            .build();
+
+        bookRepository.saveAll(List.of(book1, book2));
+
+        User user = User.builder()
+            .name("나민혁")
+            .email("nmh9097@gmail.com")
+            .build();
+
+        userRepository.save(user);
+
+        Rental rental = Rental.create(List.of(book1, book2), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
+        rentalRepository.save(rental);
+        //when
+        boolean isRentalAvailable = rentalService.isRentalAvailable(book1.getId());
+        //then
+        then(isRentalAvailable).isFalse();
+    }
+
     @DisplayName("책을 대여할 때")
     @Nested
     class Context_rentalBook {
@@ -264,6 +303,5 @@ class RentalServiceTest extends IntegrationTestSupport {
                     .isEqualTo(CustomException.BOOK_NOT_FOUND);
             }
         }
-
     }
 }
