@@ -30,7 +30,7 @@ class RentalTest {
         //when
         Rental rental = Rental.create(List.of(createBook()), createUser(), registeredDateTime);
         //then
-        BDDAssertions.then(rental.getReturnAt()).isEqualTo(registeredDateTime.plusDays(7));
+        BDDAssertions.then(rental.getDeadlineAt()).isEqualTo(registeredDateTime.plusDays(7));
     }
 
     private User createUser() {

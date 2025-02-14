@@ -71,7 +71,7 @@ class RentalServiceTest extends IntegrationTestSupport {
         List<Rental> rentals = rentalRepository.findAll();
 
         then(rentals).hasSize(1)
-            .extracting("rentalAt", "returnAt")
+            .extracting("rentalAt", "deadlineAt")
             .containsExactly(tuple(now, now.plusDays(7)));
         then(rentals.getFirst().getRentalBook())
             .extracting("book.title", "book.author", "book.publisher", "book.isbn")

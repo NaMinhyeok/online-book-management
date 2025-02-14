@@ -1,15 +1,14 @@
 package org.querypie.bookmanagement.rental.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.common.domain.BaseEntity;
 import org.querypie.bookmanagement.user.domain.User;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,13 +23,10 @@ public class RentalBook extends BaseEntity {
     @JoinColumn(name = "rental_id")
     private Rental rental;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    private LocalDateTime returnAt;
 
-    public RentalBook(Book book, Rental rental, User user) {
+    public RentalBook(Book book, Rental rental) {
         this.book = book;
         this.rental = rental;
-        this.user = user;
     }
 }
