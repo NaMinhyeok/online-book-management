@@ -1,12 +1,15 @@
 package org.querypie.bookmanagement.rental.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.common.domain.BaseEntity;
-import org.querypie.bookmanagement.user.domain.User;
 
 import java.time.LocalDateTime;
 
@@ -23,14 +26,23 @@ public class RentalBook extends BaseEntity {
     @JoinColumn(name = "rental_id")
     private Rental rental;
 
-    private LocalDateTime returnAt;
+    private LocalDateTime returnedAt;
 
-    public RentalBook(Book book, Rental rental) {
+    @Builder
+    private RentalBook(Book book, Rental rental) {
         this.book = book;
         this.rental = rental;
     }
 
     public void returnBook(LocalDateTime returnAt) {
-        this.returnAt = returnAt;
+        this.returnedAt = returnAt;
+    }
+
+    public boolean isReturned() {
+        return returnedAt != null;
+    }
+
+    public boolean isRenting() {
+        return returnedAt == null;
     }
 }

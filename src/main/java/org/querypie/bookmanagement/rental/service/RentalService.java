@@ -7,9 +7,11 @@ import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.repository.RentalRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
+import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,5 +43,12 @@ public class RentalService {
             .map(bookMap::get)
             .collect(Collectors.toList());
         return duplicateBooks;
+    }
+
+    @Transactional
+    public void returnBooks(ReturnBookCommand command, LocalDateTime returnAt) {
+        Rental rental = rentalRepository.findWithBooksById(command.rentalId())
+            .orElseThrow(() -> CustomException.RENTAL_NOT_FOUND);
+        rental.returnBooks(command.userId(), command.bookIds(), returnAt);
     }
 }
