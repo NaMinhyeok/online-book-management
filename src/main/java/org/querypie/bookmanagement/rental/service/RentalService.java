@@ -7,6 +7,7 @@ import org.querypie.bookmanagement.common.aop.Trace;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.domain.RentalBook;
+import org.querypie.bookmanagement.rental.repository.RentalBookRepository;
 import org.querypie.bookmanagement.rental.repository.RentalRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;

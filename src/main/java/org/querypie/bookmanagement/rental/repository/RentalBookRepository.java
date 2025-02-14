@@ -1,4 +1,4 @@
-package org.querypie.bookmanagement.rental.service;
+package org.querypie.bookmanagement.rental.repository;
 
 import org.querypie.bookmanagement.rental.domain.RentalBook;
 import org.springframework.data.jpa.repository.JpaRepository;
