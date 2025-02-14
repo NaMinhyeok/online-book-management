@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -172,6 +173,44 @@ class BookControllerDocsTest extends ControllerTestSupport {
                         .build()
                 )));
     }
+
+    @Test
+    void 책을_이름_또는_저자로_검색한다() throws Exception {
+        Book book1 = createBook(1L, "함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
+        Book book2 = createBook(2L, "프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", "2018-11-30");
+        Book book3 = createBook(3L, "프로그래밍 책", "함께 저자", "인사이트", "9788966262337", "description", "2018-11-30");
+
+        given(bookService.searchBooks("함께")).willReturn(List.of(
+            book1, book3
+        ));
+
+        mockMvc.perform(get("/api/v1/books/search")
+                .param("query", "함께"))
+            .andExpect(status().isOk())
+            .andDo(document("book-search",
+                resource(
+                    ResourceSnippetParameters.builder()
+                        .description("책 검색")
+                        .tags("Book")
+                        .queryParameters(
+                            parameterWithName("query").type(SimpleType.STRING).description("검색어")
+                        )
+                        .responseFields(
+                            fieldWithPath("result").type(SimpleType.STRING).description("결과"),
+                            fieldWithPath("data.books[].id").description("책 목록").type(SimpleType.NUMBER).description("책 ID"),
+                            fieldWithPath("data.books[].title").type(SimpleType.STRING).description("책 제목"),
+                            fieldWithPath("data.books[].author").type(SimpleType.STRING).description("저자"),
+                            fieldWithPath("data.books[].publisher").type(SimpleType.STRING).description("출판사"),
+                            fieldWithPath("data.books[].isbn").type(SimpleType.STRING).description("ISBN"),
+                            fieldWithPath("data.books[].description").type(SimpleType.STRING).description("설명").optional(),
+                            fieldWithPath("data.books[].publishedAt").type(SimpleType.STRING).description("출판일"),
+                            fieldWithPath("error").ignored()
+                        )
+                        .responseSchema(Schema.schema("bookSearchResponse"))
+                        .build()
+                )));
+    }
+
 
     private Book createBook(Long id, String title, String author, String publisher, String isbn, String description, String publishedAt) {
         Book book = Book.builder()

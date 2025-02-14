@@ -40,6 +40,11 @@ dependencies {
 
     // spring-rest-docs
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    annotationProcessor("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
 }
 
 tasks.withType<Test> {
@@ -94,3 +99,18 @@ abstract class RunSwaggerTask @Inject constructor(private val execOperations: Ex
 }
 
 tasks.register<RunSwaggerTask>("runSwagger")
+
+val generatedDir = "src/main/generated"
+
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(file(generatedDir))
+}
+
+tasks.register<Delete>("cleanGenerated") {
+    delete(generatedDir)
+}
+
+tasks.named("clean") {
+    dependsOn("cleanGenerated")
+}
+

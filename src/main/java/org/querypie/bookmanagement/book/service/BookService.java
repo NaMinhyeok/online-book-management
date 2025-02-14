@@ -43,6 +43,7 @@ public class BookService {
             );
     }
 
+    @Transactional
     public void deleteBook(Long bookId) {
         bookRepository.findById(bookId)
             .ifPresentOrElse(
@@ -51,5 +52,10 @@ public class BookService {
                     throw CustomException.BOOK_NOT_FOUND;
                 }
             );
+    }
+
+    @Transactional(readOnly = true)
+    public List<Book> searchBooks(String keyword) {
+        return bookRepository.searchBooks(keyword);
     }
 }
