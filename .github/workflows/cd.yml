@@ -65,14 +65,7 @@ jobs:
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
           echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> .env
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
-          echo "SPRING_PROFILES_ACTIVE=${{ env.SPRING_PROFILES_ACTIVE }}" >> .env
-
-
-      - name: Create OpenAPI Documentation
-        run: |
-          ./gradlew clean openapi3
-          mkdir -p docs
-          cp build/api-spec/openapi3.yaml docs/
+          echo "SPRING_PROFILES_ACTIVE=${{ env.ENVIRONMENT }}" >> .env
 
       - name: Transfer files to Server
         uses: appleboy/scp-action@master
@@ -81,7 +74,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".env,docker-compose.yml,prometheus.yml,docs/"
+          source: ".env,docker-compose.yml,prometheus.yml"
           target: "~/"
           overwrite: true
 
@@ -95,8 +88,9 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
-            docker-compose pull
-            docker-compose up -d
+            docker compose pull
+            docker compose up -d
+            
 
       - name: Health Check & Rollback
         uses: appleboy/ssh-action@master
