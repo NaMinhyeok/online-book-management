@@ -13,6 +13,8 @@ services:
       TZ: Asia/Seoul
     volumes:
       - /var/log/book:/var/log/book
+    networks:
+      - book-management
 
   api-docs:
     image: swaggerapi/swagger-ui
@@ -24,3 +26,9 @@ services:
     environment:
       URL: "/docs/openapi3.yaml"
     restart: always
+    networks:
+      - book-management
+
+networks:
+  book-management:
+    driver: bridge

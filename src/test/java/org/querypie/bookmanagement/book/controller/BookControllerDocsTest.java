@@ -81,9 +81,9 @@ class BookControllerDocsTest extends ControllerTestSupport {
                         .description("책 목록 조회")
                         .tags("Book")
                         .queryParameters(
-                            parameterWithName("page").type(SimpleType.NUMBER).description("페이지 번호(default: 1)"),
-                            parameterWithName("size").type(SimpleType.NUMBER).description("페이지 크기(default: 20)"),
-                            parameterWithName("sort").type(SimpleType.STRING).description("정렬 기준(default: publishedAt,desc) 사용 가능 값: publishedAt, title")
+                            parameterWithName("page").type(SimpleType.NUMBER).description("페이지 번호(default: 1)").optional(),
+                            parameterWithName("size").type(SimpleType.NUMBER).description("페이지 크기(default: 20)").optional(),
+                            parameterWithName("sort").type(SimpleType.STRING).description("정렬 기준(default: publishedAt,desc) 사용 가능 값: publishedAt, title").optional()
                         )
                         .responseFields(
                             fieldWithPath("result").type(SimpleType.STRING).description("결과"),

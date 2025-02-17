@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/**
 
 env:
   BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}
@@ -94,9 +95,8 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
-            docker-compose down
+            docker-compose pull
             docker-compose up -d
-            docker-compose ps
 
       - name: Health Check & Rollback
         uses: appleboy/ssh-action@master
@@ -117,16 +117,17 @@ jobs:
               sleep 5
             done
             
-            echo "❌ API health check failed! Rolling back..."
             
+            echo "❌ API health check failed! Rolling back..."
+
             # 가장 최근의 이전 이미지 태그 가져오기
             PREVIOUS_TAG=$(curl -s "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/book-management/tags" | jq -r '.results | sort_by(.last_updated) | .[-2].name')
-            
+
             if [ -z "$PREVIOUS_TAG" ]; then
               echo "No previous image found! Manual rollback required."
               exit 1
             fi
-            
+
             echo "Rolling back to previous image: $PREVIOUS_TAG"
             docker pull ${{ secrets.DOCKER_USERNAME }}/book-management:$PREVIOUS_TAG
             docker-compose down
