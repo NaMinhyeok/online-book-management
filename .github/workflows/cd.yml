@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/**
 
 env:
   BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}
@@ -80,7 +81,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".env,docker-compose.yml,docs/"
+          source: ".env,docker-compose.yml,prometheus.yml,docs/"
           target: "~/"
           overwrite: true
 
