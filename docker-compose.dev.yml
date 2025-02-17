@@ -1,0 +1,36 @@
+services:
+  dev-server:
+    image: "${DOCKER_USERNAME}/book-management-dev:${BUILD_NUMBER}"
+    container_name: dev-book-server
+    env_file:
+      - .env.dev
+    ports:
+      - "8081:8080"
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      TZ: Asia/Seoul
+    volumes:
+      - /var/log/book:/var/log/book
+    networks:
+      - book-management-dev
+
+  dev-api-docs:
+    image: swaggerapi/swagger-ui
+    container_name: dev-api-docs
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./docs:/usr/share/nginx/html/docs
+    environment:
+      URL: "/docs/openapi3.yaml"
+    restart: always
+    networks:
+      - book-management-dev
+
+networks:
+  book-management-dev:
+    driver: bridge
