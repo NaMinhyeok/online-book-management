@@ -13,6 +13,8 @@ services:
       TZ: Asia/Seoul
     volumes:
       - /var/log/book:/var/log/book
+    networks:
+      - book-management
 
   api-docs:
     image: swaggerapi/swagger-ui
@@ -24,3 +26,40 @@ services:
     environment:
       URL: "/docs/openapi3.yaml"
     restart: always
+    networks:
+      - book-management
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    restart: unless-stopped
+    networks:
+      - book-management
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+    networks:
+      - book-management
+volumes:
+  grafana_data:
+    
+networks:
+  book-management:
+    driver: bridge
