@@ -1,21 +1,4 @@
 services:
-  server:
-    image: "${DOCKER_USERNAME}/book-management:${BUILD_NUMBER}"
-    container_name: book-server
-    ports:
-      - "8080:8080"
-    environment:
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      TZ: Asia/Seoul
-    volumes:
-      - /var/log/book:/var/log/book
-    networks:
-      - book-management
-
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -27,7 +10,9 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     restart: unless-stopped
     networks:
+      - monitoring
       - book-management
+      - book-management-dev
 
   grafana:
     image: grafana/grafana:latest
@@ -43,7 +28,9 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     restart: unless-stopped
     networks:
+      - monitoring
       - book-management
+      - book-management-dev
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -52,11 +39,17 @@ services:
       - "9100:9100"
     restart: unless-stopped
     networks:
+      - monitoring
       - book-management
+      - book-management-dev
 
 volumes:
   grafana_data:
 
 networks:
+  monitoring:
+    driver: bridge
   book-management:
+    driver: bridge
+  book-management-dev:
     driver: bridge
