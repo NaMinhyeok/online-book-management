@@ -25,6 +25,7 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
+    @CacheEvict(value = "books", allEntries = true)
     public void registerBook(BookCreateCommand command) {
         bookRepository.save(Book.create(command.title(), command.author(), command.publisher(), command.isbn(), command.description(), command.publishedAt()));
     }
