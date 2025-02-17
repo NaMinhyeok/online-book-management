@@ -1,6 +1,7 @@
 package org.querypie.bookmanagement.book.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.domain.BookSortField;
 import org.querypie.bookmanagement.book.repository.BookRepository;
@@ -8,6 +9,7 @@ import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.aop.Trace;
 import org.querypie.bookmanagement.common.support.error.CustomException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BookService {
@@ -27,6 +30,7 @@ public class BookService {
     }
 
     @Trace
+    @Cacheable(value = "books", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     @Transactional(readOnly = true)
     public Page<Book> getBooks(Pageable pageable) {
         verifySortProperties(pageable);
@@ -43,6 +47,7 @@ public class BookService {
             .orElseThrow(() -> CustomException.BOOK_NOT_FOUND);
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     @Transactional
     public void updateBook(Long bookId, BookUpdateCommand command) {
         bookRepository.findById(bookId)
@@ -54,6 +59,7 @@ public class BookService {
             );
     }
 
+    @CacheEvict(value = "books", allEntries = true)
     @Transactional
     public void deleteBook(Long bookId) {
         bookRepository.findById(bookId)
@@ -65,6 +71,7 @@ public class BookService {
             );
     }
 
+    @Cacheable(value = "books", key = "#keyword")
     @Transactional(readOnly = true)
     public List<Book> searchBooks(String keyword) {
         return bookRepository.searchBooks(keyword);

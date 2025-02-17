@@ -52,7 +52,7 @@ tasks.withType<Test> {
 }
 
 openapi3 {
-    this.setServer("http://localhost:8080")
+    setServer("http://server:8080")
     title = "Book Management API"
     description = "Book Management API description"
     version = "0.1.0"
