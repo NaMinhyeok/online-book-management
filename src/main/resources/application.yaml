@@ -22,6 +22,16 @@ spring:
   cache:
     type: simple
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
 ---
 spring:
   config:
@@ -38,15 +48,6 @@ spring:
     activate:
       on-profile: dev
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "prometheus"
-  prometheus:
-    metrics:
-      export:
-        enabled: true
 ---
 spring:
   config:
