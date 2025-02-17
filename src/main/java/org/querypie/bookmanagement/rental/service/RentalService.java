@@ -3,7 +3,6 @@ package org.querypie.bookmanagement.rental.service;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.repository.BookRepository;
-import org.querypie.bookmanagement.common.aop.Trace;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.domain.RentalBook;
@@ -13,6 +12,8 @@ import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.user.domain.User;
 import org.querypie.bookmanagement.user.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,7 @@ public class RentalService {
         return duplicateBooks;
     }
 
+    @CacheEvict(value = "rentalAvailable", allEntries = true)
     @Transactional
     public void returnBooks(ReturnBookCommand command, LocalDateTime returnAt) {
         Rental rental = rentalRepository.findWithBooksById(command.rentalId())
@@ -67,7 +69,7 @@ public class RentalService {
         rental.returnBooks(command.userId(), command.bookIds(), returnAt);
     }
 
-    @Trace
+    @Cacheable(value = "rentalAvailable", key = "#bookId")
     @Transactional(readOnly = true)
     public boolean isRentalAvailable(Long bookId) {
         return rentalBookRepository.findRentedBookByBookIdAndReturnedAtIsNull(bookId).isEmpty();
