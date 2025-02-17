@@ -1,10 +1,9 @@
-name: Deploy to EC2
+name: Deploy Dev Container to EC2
 
 on:
   push:
     branches:
       - dev
-      - feature/**
 
 env:
   BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}v
