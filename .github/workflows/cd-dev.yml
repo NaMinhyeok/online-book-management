@@ -3,11 +3,11 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - dev
       - feature/**
 
 env:
-  BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}
+  BUILD_NUMBER: ${{ github.sha }}-${{ github.run_id }}v
 
 jobs:
   build:
@@ -51,20 +51,20 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/book-management:${{ env.BUILD_NUMBER }}
-            ${{ secrets.DOCKER_USERNAME }}/book-management:latest
+            ${{ secrets.DOCKER_USERNAME }}/book-management-dev:${{ env.BUILD_NUMBER }}
+            ${{ secrets.DOCKER_USERNAME }}/book-management-dev:latest
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
       - name: Create .env file
         run: |
-          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
-          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env
-          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
-          echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> .env
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env
-          echo "SPRING_PROFILES_ACTIVE=${{ env.ENVIRONMENT }}" >> .env
+          echo "DATABASE_NAME=${{ secrets.DEV_DATABASE_NAME }}" >> .env.dev
+          echo "DATABASE_USER=${{ secrets.DATABASE_USER }}" >> .env.dev
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env.dev
+          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env.dev
+          echo "BUILD_NUMBER=${{ env.BUILD_NUMBER }}" >> .env.dev
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> .env.dev
+          echo "SPRING_PROFILES_ACTIVE=dev" >> .env.dev
 
       - name: Transfer files to Server
         uses: appleboy/scp-action@master
@@ -73,7 +73,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: ".env,docker-compose.prod.yml,docker-compose.monitor.yml,prometheus.yml,docs/"
+          source: ".env.dev,docker-compose.dev.yml,docker-compose.monitor.yml,prometheus.yml"
           target: "~/"
           overwrite: true
 
@@ -88,9 +88,9 @@ jobs:
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             
             docker compose -f docker-compose.monitor.yml pull
-            docker compose -f docker-compose.prod.yml pull
+            docker compose --env-file .env.dev -f docker-compose.dev.yml pull
             docker compose -f docker-compose.monitor.yml up -d
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose --env-file .env.dev -f docker-compose.dev.yml up -d
 
       - name: Health Check & Rollback
         uses: appleboy/ssh-action@master
@@ -103,7 +103,7 @@ jobs:
             sleep 10
             
             for i in {1..5}; do
-              HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8080/health)
+              HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:8081/health)
               if [ "$HTTP_STATUS" -eq 200 ]; then
                 echo "✅ API is healthy!"
                 exit 0
@@ -112,20 +112,7 @@ jobs:
             done
             
             echo "❌ API health check failed! Rolling back..."
-            
-            # 가장 최근의 이전 이미지 태그 가져오기
-            PREVIOUS_TAG=$(curl -s "https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/book-management/tags" | jq -r '.results | sort_by(.last_updated) | .[-2].name')
-            
-            if [ -z "$PREVIOUS_TAG" ]; then
-              echo "No previous image found! Manual rollback required."
-              exit 1
-            fi
-            
-            echo "Rolling back to previous image: $PREVIOUS_TAG"
-            docker pull ${{ secrets.DOCKER_USERNAME }}/book-management:$PREVIOUS_TAG
-            docker-compose down
-            docker run -d --name book-management -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/book-management:$PREVIOUS_TAG
-            exit 1
+
       - name: Remove Github Actions IP From Security Group
         run: |
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port ${{ secrets.SSH_PORT }} --cidr ${{ env.PUBLIC_IP }}/32
