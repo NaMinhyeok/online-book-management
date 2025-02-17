@@ -1,0 +1,23 @@
+services:
+  server:
+    image: "${DOCKER_USERNAME}/book-management:${BUILD_NUMBER}"
+    container_name: book-server
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      TZ: Asia/Seoul
+    volumes:
+      - /var/log/book:/var/log/book
+    networks:
+      - book-management
+
+networks:
+  book-management:
+    driver: bridge
