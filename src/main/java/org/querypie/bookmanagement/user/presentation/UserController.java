@@ -3,11 +3,11 @@ package org.querypie.bookmanagement.user.presentation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.common.support.response.ApiResponse;
+import org.querypie.bookmanagement.user.domain.User;
+import org.querypie.bookmanagement.user.presentation.port.UserService;
 import org.querypie.bookmanagement.user.presentation.request.UserRegisterRequest;
 import org.querypie.bookmanagement.user.presentation.response.AllUserResponseDto;
 import org.querypie.bookmanagement.user.presentation.response.UserResponseDto;
-import org.querypie.bookmanagement.user.domain.User;
-import org.querypie.bookmanagement.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

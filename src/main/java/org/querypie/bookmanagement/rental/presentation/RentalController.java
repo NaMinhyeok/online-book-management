@@ -2,10 +2,10 @@ package org.querypie.bookmanagement.rental.presentation;
 
 import lombok.RequiredArgsConstructor;
 import org.querypie.bookmanagement.common.support.response.ApiResponse;
+import org.querypie.bookmanagement.rental.presentation.port.RentalService;
 import org.querypie.bookmanagement.rental.presentation.request.RentalBookRequestDto;
 import org.querypie.bookmanagement.rental.presentation.request.ReturnBookRequestDto;
 import org.querypie.bookmanagement.rental.presentation.response.RentalAvailableResponse;
-import org.querypie.bookmanagement.rental.service.RentalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

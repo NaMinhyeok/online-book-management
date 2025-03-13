@@ -3,12 +3,13 @@ package org.querypie.bookmanagement.book.presentation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.querypie.bookmanagement.book.domain.Book;
+import org.querypie.bookmanagement.book.presentation.port.BookCommandService;
+import org.querypie.bookmanagement.book.presentation.port.BookQueryService;
 import org.querypie.bookmanagement.book.presentation.request.BookCreateRequestDto;
 import org.querypie.bookmanagement.book.presentation.request.BookUpdateRequestDto;
 import org.querypie.bookmanagement.book.presentation.response.AllBooksResponseDto;
 import org.querypie.bookmanagement.book.presentation.response.BookResponseDto;
-import org.querypie.bookmanagement.book.domain.Book;
-import org.querypie.bookmanagement.book.service.BookService;
 import org.querypie.bookmanagement.common.support.response.ApiResponse;
 import org.querypie.bookmanagement.common.support.response.PageResponse;
 import org.springframework.data.domain.Page;
@@ -25,14 +26,15 @@ import java.util.List;
 @RequestMapping("/api/v1/books")
 public class BookController {
 
-    private final BookService bookService;
+    private final BookQueryService bookQueryService;
+    private final BookCommandService bookCommandService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public ApiResponse<?> registerBook(
         @Valid @RequestBody BookCreateRequestDto request
     ) {
-        bookService.registerBook(request.toCommand());
+        bookCommandService.registerBook(request.toCommand());
         return ApiResponse.success();
     }
 
@@ -40,7 +42,7 @@ public class BookController {
     public ApiResponse<PageResponse<BookResponseDto>> getBooks(
         @PageableDefault(size = 20, sort = "publishedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<Book> books = bookService.getBooks(pageable);
+        Page<Book> books = bookQueryService.getBooks(pageable);
         return ApiResponse.success(PageResponse.of(books.map(BookResponseDto::of)));
     }
 
@@ -48,7 +50,7 @@ public class BookController {
     public ApiResponse<BookResponseDto> getBook(
         @PathVariable Long bookId
     ) {
-        Book book = bookService.getBook(bookId);
+        Book book = bookQueryService.getBook(bookId);
         return ApiResponse.success(BookResponseDto.of(book));
     }
 
@@ -58,7 +60,7 @@ public class BookController {
         @PathVariable Long bookId,
         @Valid @RequestBody BookUpdateRequestDto request
     ) {
-        bookService.updateBook(bookId, request.toCommand());
+        bookCommandService.updateBook(bookId, request.toCommand());
         return ApiResponse.success();
     }
 
@@ -67,7 +69,7 @@ public class BookController {
     public ApiResponse<?> deleteBook(
         @PathVariable Long bookId
     ) {
-        bookService.deleteBook(bookId);
+        bookCommandService.deleteBook(bookId);
         return ApiResponse.success();
     }
 
@@ -75,7 +77,7 @@ public class BookController {
     public ApiResponse<AllBooksResponseDto> searchBooks(
         @NotBlank @RequestParam String query
     ) {
-        List<Book> books = bookService.searchBooks(query);
+        List<Book> books = bookQueryService.searchBooks(query);
         return ApiResponse.success(new AllBooksResponseDto(books.stream().map(BookResponseDto::of).toList()));
     }
 

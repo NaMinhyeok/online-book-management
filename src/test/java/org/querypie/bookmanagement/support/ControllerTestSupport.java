@@ -1,10 +1,11 @@
 package org.querypie.bookmanagement.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.querypie.bookmanagement.book.service.BookService;
+import org.querypie.bookmanagement.book.presentation.port.BookCommandService;
+import org.querypie.bookmanagement.book.presentation.port.BookQueryService;
 import org.querypie.bookmanagement.example.service.ExampleService;
-import org.querypie.bookmanagement.rental.service.RentalService;
-import org.querypie.bookmanagement.user.service.UserService;
+import org.querypie.bookmanagement.rental.presentation.port.RentalService;
+import org.querypie.bookmanagement.user.presentation.port.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,7 +26,10 @@ public abstract class ControllerTestSupport {
     protected ExampleService exampleService;
 
     @MockitoBean
-    protected BookService bookService;
+    protected BookQueryService bookQueryService;
+
+    @MockitoBean
+    protected BookCommandService bookCommandService;
 
     @MockitoBean
     protected UserService userService;
