@@ -16,8 +16,8 @@ public class RentalRepositoryImpl implements RentalRepository {
     }
 
     @Override
-    public void save(Rental rental) {
-        rentalJpaRepository.save(rental);
+    public Rental save(Rental rental) {
+        return rentalJpaRepository.save(rental);
     }
 
     @Override

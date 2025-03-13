@@ -19,8 +19,8 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
-    public void save(Book book) {
-        bookJpaRepository.save(book);
+    public Book save(Book book) {
+        return bookJpaRepository.save(book);
     }
 
     @Override
