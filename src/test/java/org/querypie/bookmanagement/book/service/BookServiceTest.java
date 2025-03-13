@@ -3,7 +3,7 @@ package org.querypie.bookmanagement.book.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.domain.Book;
-import org.querypie.bookmanagement.book.repository.BookJpaRepository;
+import org.querypie.bookmanagement.book.infrastructure.BookJpaRepository;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.support.error.CustomException;

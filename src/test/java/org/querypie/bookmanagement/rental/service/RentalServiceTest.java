@@ -4,15 +4,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.domain.Book;
-import org.querypie.bookmanagement.book.repository.BookJpaRepository;
+import org.querypie.bookmanagement.book.infrastructure.BookJpaRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
-import org.querypie.bookmanagement.rental.repository.RentalJpaRepository;
+import org.querypie.bookmanagement.rental.infrastructure.RentalJpaRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
-import org.querypie.bookmanagement.user.repository.UserJpaRepository;
+import org.querypie.bookmanagement.user.infrastructure.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

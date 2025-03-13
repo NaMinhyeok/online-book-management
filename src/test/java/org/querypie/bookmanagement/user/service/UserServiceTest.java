@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
-import org.querypie.bookmanagement.user.repository.UserJpaRepository;
+import org.querypie.bookmanagement.user.infrastructure.UserJpaRepository;
 import org.querypie.bookmanagement.user.service.command.UserRegisterCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
