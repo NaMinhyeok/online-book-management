@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
-import org.querypie.bookmanagement.user.repository.UserRepository;
+import org.querypie.bookmanagement.user.repository.UserJpaRepository;
 import org.querypie.bookmanagement.user.service.command.UserRegisterCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ class UserServiceTest extends IntegrationTestSupport {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     @DisplayName("사용자를 등록한다")
     @Test
@@ -31,7 +31,7 @@ class UserServiceTest extends IntegrationTestSupport {
         //when
         userService.register(new UserRegisterCommand("나민혁", "nmh9097@gmail.com"));
         //then
-        List<User> users = userRepository.findAll();
+        List<User> users = userJpaRepository.findAll();
         then(users).extracting("name", "email")
             .containsExactly(tuple("나민혁", "nmh9097@gmail.com"));
     }
@@ -49,7 +49,7 @@ class UserServiceTest extends IntegrationTestSupport {
             .email("gildong@naver.com")
             .build();
 
-        userRepository.saveAll(List.of(user1, user2));
+        userJpaRepository.saveAll(List.of(user1, user2));
         //when
         List<User> users = userService.getUsers();
         //then
@@ -72,7 +72,7 @@ class UserServiceTest extends IntegrationTestSupport {
                     .name("나민혁")
                     .email("nmh9097@gmail.com")
                     .build();
-                userRepository.save(user);
+                userJpaRepository.save(user);
                 //when
                 User foundUser = userService.getUser(user.getId());
                 //then

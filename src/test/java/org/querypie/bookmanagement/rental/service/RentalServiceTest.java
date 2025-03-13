@@ -4,15 +4,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.domain.Book;
-import org.querypie.bookmanagement.book.repository.BookRepository;
+import org.querypie.bookmanagement.book.repository.BookJpaRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
-import org.querypie.bookmanagement.rental.repository.RentalRepository;
+import org.querypie.bookmanagement.rental.repository.RentalJpaRepository;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.support.IntegrationTestSupport;
 import org.querypie.bookmanagement.user.domain.User;
-import org.querypie.bookmanagement.user.repository.UserRepository;
+import org.querypie.bookmanagement.user.repository.UserJpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +30,11 @@ class RentalServiceTest extends IntegrationTestSupport {
     private RentalService rentalService;
 
     @Autowired
-    private RentalRepository rentalRepository;
+    private RentalJpaRepository rentalJpaRepository;
     @Autowired
-    private BookRepository bookRepository;
+    private BookJpaRepository bookJpaRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserJpaRepository userJpaRepository;
 
     @DisplayName("책을 대여한다")
     @Test
@@ -58,19 +58,19 @@ class RentalServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
 
         User user = User.builder()
             .name("나민혁")
             .email("nmh9097@gmail.com")
             .build();
 
-        userRepository.save(user);
+        userJpaRepository.save(user);
         //when
         LocalDateTime now = LocalDateTime.now();
         rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), now);
         //then
-        List<Rental> rentals = rentalRepository.findAll();
+        List<Rental> rentals = rentalJpaRepository.findAll();
 
         then(rentals).hasSize(1)
             .extracting("rentalAt", "deadlineAt")
@@ -113,21 +113,21 @@ class RentalServiceTest extends IntegrationTestSupport {
             .publishedAt("2015-10-29")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2, book3));
+        bookJpaRepository.saveAll(List.of(book1, book2, book3));
 
         User user = User.builder()
             .name("나민혁")
             .email("nmh9097@gmail.com")
             .build();
 
-        userRepository.save(user);
+        userJpaRepository.save(user);
         Rental rental = Rental.create(List.of(book1, book2, book3), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
-        rentalRepository.save(rental);
+        rentalJpaRepository.save(rental);
         //when
         ReturnBookCommand command = new ReturnBookCommand(rental.getId(), List.of(book1.getId(), book2.getId()), user.getId());
         rentalService.returnBooks(command, LocalDateTime.of(2025, 2, 14, 9, 0, 0));
         //then
-        List<Rental> rentals = rentalRepository.findAll();
+        List<Rental> rentals = rentalJpaRepository.findAll();
         then(rentals).hasSize(1);
         then(rentals.getFirst().getRentalBooks())
             .extracting("book", "returnedAt")
@@ -160,17 +160,17 @@ class RentalServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
 
         User user = User.builder()
             .name("나민혁")
             .email("nmh9097@gmail.com")
             .build();
 
-        userRepository.save(user);
+        userJpaRepository.save(user);
 
         Rental rental = Rental.create(List.of(book1, book2), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
-        rentalRepository.save(rental);
+        rentalJpaRepository.save(rental);
         //when
         boolean isRentalAvailable = rentalService.isRentalAvailable(book1.getId());
         //then
@@ -206,14 +206,14 @@ class RentalServiceTest extends IntegrationTestSupport {
                     .publishedAt("2017-12-11")
                     .build();
 
-                bookRepository.saveAll(List.of(book1, book2));
+                bookJpaRepository.saveAll(List.of(book1, book2));
 
                 User user = User.builder()
                     .name("나민혁")
                     .email("nmh9097@gmail.com")
                     .build();
 
-                userRepository.save(user);
+                userJpaRepository.save(user);
                 //when
                 //then
                 thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), 0L), now))
@@ -246,17 +246,17 @@ class RentalServiceTest extends IntegrationTestSupport {
                     .publishedAt("2017-12-11")
                     .build();
 
-                bookRepository.saveAll(List.of(book1, book2));
+                bookJpaRepository.saveAll(List.of(book1, book2));
 
                 User user = User.builder()
                     .name("나민혁")
                     .email("nmh9097@gmail.com")
                     .build();
 
-                userRepository.save(user);
+                userJpaRepository.save(user);
 
                 Rental rental = Rental.create(List.of(book1, book2), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
-                rentalRepository.save(rental);
+                rentalJpaRepository.save(rental);
                 //when
                 //then
                 thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), LocalDateTime.now()))
@@ -290,13 +290,13 @@ class RentalServiceTest extends IntegrationTestSupport {
                     .publishedAt("2017-12-11")
                     .build();
 
-                bookRepository.saveAll(List.of(book1, book2));
+                bookJpaRepository.saveAll(List.of(book1, book2));
 
                 User user = User.builder()
                     .name("나민혁")
                     .email("nmh9097@gmail.com")
                     .build();
-                userRepository.save(user);
+                userJpaRepository.save(user);
                 //when
                 //then
                 thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), 0L), user.getId()), now))
