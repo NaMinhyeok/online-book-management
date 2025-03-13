@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface BookRepository {
 
-    void save(Book book);
+    Book save(Book book);
 
     Page<Book> findAll(Pageable pageable);
 
