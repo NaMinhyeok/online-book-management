@@ -13,10 +13,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.assertj.core.api.BDDAssertions.then;
 
 @Transactional
-class CustomBookRepositoryImplTest extends IntegrationTestSupport {
+class CustomBookJpaRepositoryImplTest extends IntegrationTestSupport {
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookJpaRepository bookJpaRepository;
 
     @DisplayName("책을 이름 또는 저자로 검색한다")
     @Test
@@ -49,9 +49,9 @@ class CustomBookRepositoryImplTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2, book3));
+        bookJpaRepository.saveAll(List.of(book1, book2, book3));
         //when
-        List<Book> results = bookRepository.searchBooks("함께");
+        List<Book> results = bookJpaRepository.searchBooks("함께");
         //then
         then(results).hasSize(2)
             .extracting("title", "author")

@@ -3,7 +3,7 @@ package org.querypie.bookmanagement.book.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.querypie.bookmanagement.book.domain.Book;
-import org.querypie.bookmanagement.book.repository.BookRepository;
+import org.querypie.bookmanagement.book.repository.BookJpaRepository;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.common.support.error.CustomException;
@@ -29,7 +29,7 @@ class BookServiceTest extends IntegrationTestSupport {
     private BookService bookService;
 
     @Autowired
-    private BookRepository bookRepository;
+    private BookJpaRepository bookJpaRepository;
 
     @DisplayName("책을 등록한다")
     @Test
@@ -39,7 +39,7 @@ class BookServiceTest extends IntegrationTestSupport {
         //when
         bookService.registerBook(command);
         //then
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookJpaRepository.findAll();
 
         then(books).hasSize(1)
             .extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
@@ -77,7 +77,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2010-01-01")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2, book3));
+        bookJpaRepository.saveAll(List.of(book1, book2, book3));
 
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "publishedAt"));
         //when
@@ -122,7 +122,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2010-01-01")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2, book3));
+        bookJpaRepository.saveAll(List.of(book1, book2, book3));
 
         Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "author"));
         //when
@@ -154,7 +154,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
         // when
         Book book = bookService.getBook(book1.getId());
         // then
@@ -184,7 +184,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
         // when
         // then
         thenThrownBy(() -> bookService.getBook(0L))
@@ -203,11 +203,11 @@ class BookServiceTest extends IntegrationTestSupport {
             .description("description")
             .publishedAt("2018-11-30")
             .build();
-        bookRepository.save(book);
+        bookJpaRepository.save(book);
         //when
         bookService.updateBook(book.getId(), new BookUpdateCommand("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", null, "2017-12-11"));
         //then
-        Book updatedBook = bookRepository.findById(book.getId()).get();
+        Book updatedBook = bookJpaRepository.findById(book.getId()).get();
         then(updatedBook).extracting("title", "author", "publisher", "isbn", "description", "publishedAt")
             .containsExactly("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", LocalDate.of(2017, 12, 11));
     }
@@ -234,7 +234,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
         // when
         // then
         thenThrownBy(() -> bookService.updateBook(0L, new BookUpdateCommand("프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", null, "2017-12-11"))
@@ -253,11 +253,11 @@ class BookServiceTest extends IntegrationTestSupport {
             .description("description")
             .publishedAt("2018-11-30")
             .build();
-        bookRepository.save(book);
+        bookJpaRepository.save(book);
         //when
         bookService.deleteBook(book.getId());
         //then
-        List<Book> books = bookRepository.findAll();
+        List<Book> books = bookJpaRepository.findAll();
         then(books).isEmpty();
     }
 
@@ -283,7 +283,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2));
+        bookJpaRepository.saveAll(List.of(book1, book2));
         // when
         // then
         thenThrownBy(() -> bookService.deleteBook(0L))
@@ -321,7 +321,7 @@ class BookServiceTest extends IntegrationTestSupport {
             .publishedAt("2017-12-11")
             .build();
 
-        bookRepository.saveAll(List.of(book1, book2, book3));
+        bookJpaRepository.saveAll(List.of(book1, book2, book3));
         //when
         List<Book> results = bookService.searchBooks("함께");
         //then
