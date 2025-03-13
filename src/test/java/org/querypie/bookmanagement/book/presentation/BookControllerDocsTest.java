@@ -4,9 +4,9 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import com.epages.restdocs.apispec.SimpleType;
 import org.junit.jupiter.api.Test;
+import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.presentation.request.BookCreateRequestDto;
 import org.querypie.bookmanagement.book.presentation.request.BookUpdateRequestDto;
-import org.querypie.bookmanagement.book.domain.Book;
 import org.querypie.bookmanagement.book.service.command.BookCreateCommand;
 import org.querypie.bookmanagement.book.service.command.BookUpdateCommand;
 import org.querypie.bookmanagement.support.ControllerTestSupport;
@@ -30,7 +30,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
     void 책을_등록한다() throws Exception {
         BookCreateRequestDto request = new BookCreateRequestDto("함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
 
-        willDoNothing().given(bookService).registerBook(any(BookCreateCommand.class));
+        willDoNothing().given(bookCommandService).registerBook(any(BookCreateCommand.class));
 
         mockMvc.perform(post("/api/v1/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
 
         Page<Book> booksPage = new PageImpl<>(List.of(book1, book2), PageRequest.of(0, 20, Sort.by("publishedAt").descending()), 2);
 
-        given(bookService.getBooks(any(Pageable.class))).willReturn(booksPage);
+        given(bookQueryService.getBooks(any(Pageable.class))).willReturn(booksPage);
 
         mockMvc.perform(get("/api/v1/books")
                 .param("page", "1")
@@ -110,7 +110,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
     void 책을_단권_조회한다() throws Exception {
         Book book = createBook(1L, "함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
 
-        given(bookService.getBook(anyLong())).willReturn(book);
+        given(bookQueryService.getBook(anyLong())).willReturn(book);
 
         mockMvc.perform(get("/api/v1/books/{bookId}", 1L))
             .andExpect(status().isOk())
@@ -140,7 +140,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
     void 책의_정보를_수정한다() throws Exception {
         BookUpdateRequestDto request = new BookUpdateRequestDto("함께 자라기", "김창준", "인사이트", "9788966262335", "description", "2018-11-30");
 
-        willDoNothing().given(bookService).updateBook(anyLong(), any(BookUpdateCommand.class));
+        willDoNothing().given(bookCommandService).updateBook(anyLong(), any(BookUpdateCommand.class));
 
         mockMvc.perform(put("/api/v1/books/{bookId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -171,7 +171,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
 
     @Test
     void 책을_삭제한다() throws Exception {
-        willDoNothing().given(bookService).deleteBook(anyLong());
+        willDoNothing().given(bookCommandService).deleteBook(anyLong());
 
         mockMvc.perform(delete("/api/v1/books/{bookId}", 1L))
             .andExpect(status().isNoContent())
@@ -196,7 +196,7 @@ class BookControllerDocsTest extends ControllerTestSupport {
         Book book2 = createBook(2L, "프로그래머의 길", "로버트 C. 마틴", "인사이트", "9788966262335", "description", "2018-11-30");
         Book book3 = createBook(3L, "프로그래밍 책", "함께 저자", "인사이트", "9788966262337", "description", "2018-11-30");
 
-        given(bookService.searchBooks("함께")).willReturn(List.of(
+        given(bookQueryService.searchBooks("함께")).willReturn(List.of(
             book1, book3
         ));
 

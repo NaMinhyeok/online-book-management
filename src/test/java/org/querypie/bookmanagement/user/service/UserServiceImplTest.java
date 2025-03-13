@@ -16,10 +16,10 @@ import java.util.List;
 import static org.assertj.core.api.BDDAssertions.*;
 
 @Transactional
-class UserServiceTest extends IntegrationTestSupport {
+class UserServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
     private UserJpaRepository userJpaRepository;
@@ -29,7 +29,7 @@ class UserServiceTest extends IntegrationTestSupport {
     void registerUser() {
         //given
         //when
-        userService.register(new UserRegisterCommand("나민혁", "nmh9097@gmail.com"));
+        userServiceImpl.register(new UserRegisterCommand("나민혁", "nmh9097@gmail.com"));
         //then
         List<User> users = userJpaRepository.findAll();
         then(users).extracting("name", "email")
@@ -51,7 +51,7 @@ class UserServiceTest extends IntegrationTestSupport {
 
         userJpaRepository.saveAll(List.of(user1, user2));
         //when
-        List<User> users = userService.getUsers();
+        List<User> users = userServiceImpl.getUsers();
         //then
         then(users).hasSize(2)
             .extracting("name", "email")
@@ -74,7 +74,7 @@ class UserServiceTest extends IntegrationTestSupport {
                     .build();
                 userJpaRepository.save(user);
                 //when
-                User foundUser = userService.getUser(user.getId());
+                User foundUser = userServiceImpl.getUser(user.getId());
                 //then
                 then(foundUser).extracting("name", "email")
                     .containsExactly("나민혁", "nmh9097@gmail.com");
@@ -89,7 +89,7 @@ class UserServiceTest extends IntegrationTestSupport {
             void throwUserNotFoundException() {
                 //when
                 //then
-                thenThrownBy(() -> userService.getUser(0L))
+                thenThrownBy(() -> userServiceImpl.getUser(0L))
                     .isEqualTo(CustomException.USER_NOT_FOUND);
             }
         }

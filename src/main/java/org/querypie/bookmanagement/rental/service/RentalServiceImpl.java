@@ -6,6 +6,7 @@ import org.querypie.bookmanagement.book.service.port.BookRepository;
 import org.querypie.bookmanagement.common.support.error.CustomException;
 import org.querypie.bookmanagement.rental.domain.Rental;
 import org.querypie.bookmanagement.rental.domain.RentalBook;
+import org.querypie.bookmanagement.rental.presentation.port.RentalService;
 import org.querypie.bookmanagement.rental.service.command.RentalBookCommand;
 import org.querypie.bookmanagement.rental.service.command.ReturnBookCommand;
 import org.querypie.bookmanagement.rental.service.port.RentalBookRepository;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
-public class RentalService {
+public class RentalServiceImpl implements RentalService {
 
     private final RentalRepository rentalRepository;
     private final UserRepository userRepository;
@@ -32,6 +33,7 @@ public class RentalService {
     private final RentalBookRepository rentalBookRepository;
 
     @Transactional
+    @Override
     public void rentalBooks(RentalBookCommand command, LocalDateTime rentalAt) {
         verifyRentalAvailable(command.bookIds());
         List<Book> books = findBooksBy(command.bookIds());
@@ -63,6 +65,7 @@ public class RentalService {
 
     @CacheEvict(value = "rentalAvailable", allEntries = true)
     @Transactional
+    @Override
     public void returnBooks(ReturnBookCommand command, LocalDateTime returnAt) {
         Rental rental = rentalRepository.findWithBooksById(command.rentalId())
             .orElseThrow(() -> CustomException.RENTAL_NOT_FOUND);
@@ -71,6 +74,7 @@ public class RentalService {
 
     @Cacheable(value = "rentalAvailable", key = "#bookId")
     @Transactional(readOnly = true)
+    @Override
     public boolean isRentalAvailable(Long bookId) {
         return rentalBookRepository.findRentedBookByBookIdAndReturnedAtIsNull(bookId).isEmpty();
     }

@@ -24,10 +24,10 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenThrownBy;
 
 @Transactional
-class RentalServiceTest extends IntegrationTestSupport {
+class RentalServiceImplTest extends IntegrationTestSupport {
 
     @Autowired
-    private RentalService rentalService;
+    private RentalServiceImpl rentalServiceImpl;
 
     @Autowired
     private RentalJpaRepository rentalJpaRepository;
@@ -68,7 +68,7 @@ class RentalServiceTest extends IntegrationTestSupport {
         userJpaRepository.save(user);
         //when
         LocalDateTime now = LocalDateTime.now();
-        rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), now);
+        rentalServiceImpl.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), now);
         //then
         List<Rental> rentals = rentalJpaRepository.findAll();
 
@@ -125,7 +125,7 @@ class RentalServiceTest extends IntegrationTestSupport {
         rentalJpaRepository.save(rental);
         //when
         ReturnBookCommand command = new ReturnBookCommand(rental.getId(), List.of(book1.getId(), book2.getId()), user.getId());
-        rentalService.returnBooks(command, LocalDateTime.of(2025, 2, 14, 9, 0, 0));
+        rentalServiceImpl.returnBooks(command, LocalDateTime.of(2025, 2, 14, 9, 0, 0));
         //then
         List<Rental> rentals = rentalJpaRepository.findAll();
         then(rentals).hasSize(1);
@@ -172,7 +172,7 @@ class RentalServiceTest extends IntegrationTestSupport {
         Rental rental = Rental.create(List.of(book1, book2), user, LocalDateTime.of(2025, 2, 11, 9, 0, 0));
         rentalJpaRepository.save(rental);
         //when
-        boolean isRentalAvailable = rentalService.isRentalAvailable(book1.getId());
+        boolean isRentalAvailable = rentalServiceImpl.isRentalAvailable(book1.getId());
         //then
         then(isRentalAvailable).isFalse();
     }
@@ -216,7 +216,7 @@ class RentalServiceTest extends IntegrationTestSupport {
                 userJpaRepository.save(user);
                 //when
                 //then
-                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), 0L), now))
+                thenThrownBy(() -> rentalServiceImpl.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), 0L), now))
                     .isEqualTo(CustomException.USER_NOT_FOUND);
             }
         }
@@ -259,7 +259,7 @@ class RentalServiceTest extends IntegrationTestSupport {
                 rentalJpaRepository.save(rental);
                 //when
                 //then
-                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), LocalDateTime.now()))
+                thenThrownBy(() -> rentalServiceImpl.rentalBooks(new RentalBookCommand(List.of(book1.getId(), book2.getId()), user.getId()), LocalDateTime.now()))
                     .isEqualTo(CustomException.RENTAL_BOOKS_ALREADY_RENTED);
             }
         }
@@ -299,7 +299,7 @@ class RentalServiceTest extends IntegrationTestSupport {
                 userJpaRepository.save(user);
                 //when
                 //then
-                thenThrownBy(() -> rentalService.rentalBooks(new RentalBookCommand(List.of(book1.getId(), 0L), user.getId()), now))
+                thenThrownBy(() -> rentalServiceImpl.rentalBooks(new RentalBookCommand(List.of(book1.getId(), 0L), user.getId()), now))
                     .isEqualTo(CustomException.BOOK_NOT_FOUND);
             }
         }
